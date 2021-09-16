@@ -6,7 +6,8 @@ bin-release/
 
 # Other files and folders
 .settings/
-
+# Local .terraform directories
+**/.terraform/*
 # Executables
 *.swf
 *.air
