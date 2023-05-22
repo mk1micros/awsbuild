@@ -1,15 +1,4 @@
-#Create VPC in es-west-1
-resource "aws_vpc" "vpc_master" {
-  provider             = aws.region-master
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
-  tags = {
-    "key" : "value",
-    Name = "master-vpc-jenkins"
-  }
 
-}
 #Create VPC in eu-west-2
 resource "aws_vpc" "vpc_master_london" {
   provider             = aws.region-worker
@@ -20,15 +9,6 @@ resource "aws_vpc" "vpc_master_london" {
     Name = "worker-vpc-jenkins"
   }
 
-}
-
-#Create IGW in eu-west-1
-resource "aws_internet_gateway" "igw" {
-  provider = aws.region-master
-  vpc_id   = aws_vpc.vpc_master.id
-  tags = {
-    Name = "Master VPC IGW"
-  }
 }
 
 #Create IGW in eu-west-2

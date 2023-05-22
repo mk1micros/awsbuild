@@ -8,6 +8,7 @@ resource "aws_lb" "application-lb" {
   tags = {
     Name = "Jenkins-LB"
   }
+  drop_invalid_header_fields = true
 }
 
 resource "aws_lb_target_group" "app-lb-tg" {
@@ -48,7 +49,7 @@ resource "aws_lb_listener" "jenkins-listener-http" {
 resource "aws_lb_listener" "jenkins-listener-https" {
   provider          = aws.region-master
   load_balancer_arn = aws_lb.application-lb.arn
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   port              = "443"
   protocol          = "HTTPS"
   certificate_arn   = aws_acm_certificate.jenkins-lb-https.arn
