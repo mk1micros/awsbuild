@@ -19,6 +19,7 @@ resource "aws_security_group" "lb-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
+    description = "egress out ports allowed"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
