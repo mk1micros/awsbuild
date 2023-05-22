@@ -55,6 +55,7 @@ resource "aws_security_group" "jenkins-sg" {
     cidr_blocks = ["10.200.1.0/24"]
   }
   egress {
+    description = "egress out ports allowed"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -86,6 +87,7 @@ resource "aws_security_group" "jenkins-sg-london" {
     cidr_blocks = ["10.0.1.0/24"]
   }
   egress {
+    description = "egress out ports allowed"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
