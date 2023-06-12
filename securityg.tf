@@ -28,9 +28,9 @@ resource "aws_security_group" "lb-sg" {
 }
 
 #Create SG for allowing TCP/8080 from * and TCP/22 from your IP in eu-west-1
-resource "aws_security_group" "jenkins-sg" {
+resource "aws_security_group" "rust-master-sg" {
   provider    = aws.region-master
-  name        = "jenkins-sg"
+  name        = "rust-master-sg"
   description = "Allow TCP/8080 & TCP/22"
   vpc_id      = aws_vpc.vpc_master.id
   ingress {
@@ -42,18 +42,18 @@ resource "aws_security_group" "jenkins-sg" {
   }
   ingress {
     description     = "allow anyone on port 8080"
-    from_port       = var.webserver-port
-    to_port         = var.webserver-port
+    from_port       = var.webserver_port
+    to_port         = var.webserver_port
     protocol        = "tcp"
     security_groups = [aws_security_group.lb-sg.id]
   }
-  ingress {
-    description = "allow traffic from us-west-2"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["10.200.1.0/24"]
-  }
+  # ingress {
+  #   description = "allow traffic from us-west-1"
+  #   from_port   = 0
+  #   to_port     = 0
+  #   protocol    = "-1"
+  #   cidr_blocks = ["10.200.1.0/24"]
+  # }
   egress {
     description = "egress out ports allowed"
     from_port   = 0
@@ -66,12 +66,12 @@ resource "aws_security_group" "jenkins-sg" {
 
 
 #Create SG for allowing TCP/22 from your IP in us-west-2
-resource "aws_security_group" "jenkins-sg-london" {
+resource "aws_security_group" "rust-sg-" {
   provider = aws.region-worker
 
-  name        = "jenkins-sg-london"
+  name        = "rust-sg-ireland"
   description = "Allow TCP/8080 & TCP/22"
-  vpc_id      = aws_vpc.vpc_master_london.id
+  vpc_id      = aws_vpc.vpc_ireland.id
   ingress {
     description = "Allow 22 from our public IP"
     from_port   = 22
@@ -79,13 +79,13 @@ resource "aws_security_group" "jenkins-sg-london" {
     protocol    = "tcp"
     cidr_blocks = [var.external_ip]
   }
-  ingress {
-    description = "Allow traffic from eu-west-1"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["10.0.1.0/24"]
-  }
+  # ingress {
+  #   description = "Allow traffic from eu-west-1"
+  #   from_port   = 0
+  #   to_port     = 0
+  #   protocol    = "-1"
+  #   cidr_blocks = ["10.0.1.0/24"]
+  # }
   egress {
     description = "egress out ports allowed"
     from_port   = 0

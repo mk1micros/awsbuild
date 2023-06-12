@@ -26,11 +26,16 @@ variable "instance-type" {
   default = "t3.micro"
 }
 
-variable "webserver-port" {
+variable "webserver_port" {
   type    = number
   default = 8080
 }
 variable "dns-name" {
   type    = string
-  default = "sgonew.click."
+  default = "mk1micros.co.uk."
+}
+variable "ami" {
+  type    = string
+  default = "ami-02fb3e77af3bea031"
+
 }

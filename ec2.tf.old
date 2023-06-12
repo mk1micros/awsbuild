@@ -1,0 +1,54 @@
+
+#Get Linux AMI ID using SSM Parameter endpoint in us-west-2
+data "aws_ssm_parameter" "linuxAmi" {
+  provider = aws.region-worker
+  name     = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+}
+
+
+#Create key-pair for logging into EC2 in eu-west-2
+resource "aws_key_pair" "rust-key" {
+  provider   = aws.region-master
+  key_name   = "rustkeypair"
+  public_key = file("~/.ssh/id_rsa.pub")
+}
+
+
+
+
+#Create and bootstrap EC2 in eu-west-1
+resource "aws_instance" "ec2-rust-master" {
+  depends_on                  = [aws_key_pair.rust-key]
+  provider                    = aws.region-master
+  ami                         = var.ami
+  instance_type               = var.instance-type
+  key_name                    = aws_key_pair.rust-key.key_name
+  associate_public_ip_address = true
+  vpc_security_group_ids      = [aws_security_group.rust-master-sg.id]
+  subnet_id                   = aws_subnet.subnet_1.id
+
+  tags = {
+    "Name" = "Rust game server"
+  }
+
+}
+
+# #Create key-pair for logging into EC2 in eu-west-1
+# resource "aws_key_pair" "master-key" {
+#   provider   = aws.region-master
+#   key_name   = "ec2test"
+#   public_key = file("~/.ssh/id_rsa.pub")
+# }
+
+# resource "aws_lb" "application-lb" {
+#   provider           = aws.region-master
+#   name               = "jenkins-lb"
+#   internal           = false
+#   load_balancer_type = "application"
+#   security_groups    = [aws_security_group.lb-sg.id]
+#   subnets            = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
+#   tags = {
+#     Name = "Jenkins-LB"
+#   }
+#   drop_invalid_header_fields = true
+# }
