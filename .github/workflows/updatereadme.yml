@@ -24,7 +24,6 @@ jobs:
         - run: echo '<!-- SECURITY:START -->' >> README.md
         - run: cat SECURITY.md >> README.md
         - run: echo '<!-- SECURITY:END -->' >> README.md
-
         - name: push
           uses: actions-x/commit@v2
           env:
