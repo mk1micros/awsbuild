@@ -27,6 +27,7 @@ jobs:
 
         - name: push
           uses: actions-x/commit@v2
+        - run: git config --global --add safe.directory /github/workspace
           env:
              GITHUB_TOKEN: ${{ secrets.TOKEN }}  # Needed to get PR information, if any
           with:
