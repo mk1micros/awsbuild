@@ -19,14 +19,14 @@ jobs:
      steps:
         - name: Checkout source code
           uses: actions/checkout@v2
-
+        - run: git config --global --add safe.directory /github/workspace
         - run: sed -i '/<!-- SECURITY:START -->/,/<!-- SECURITY:END -->/d' README.md
         - run: echo '<!-- SECURITY:START -->' >> README.md
         - run: cat SECURITY.md >> README.md
         - run: echo '<!-- SECURITY:END -->' >> README.md
         - name: push
           uses: actions-x/commit@v2
-        - run: git config --global --add safe.directory /github/workspace
+       
           env:
              GITHUB_TOKEN: ${{ secrets.TOKEN }}  # Needed to get PR information, if any
           with:
