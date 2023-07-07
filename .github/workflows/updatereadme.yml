@@ -2,34 +2,33 @@ name: Update README.md with current security policy
 
 on:
   push:
-     branches:
-        - main
-        - stable
+    branches:
+      - main
+      - stable
   pull_request:
     types: [open, synchronize]
 
 jobs:
   build:
-     name:
-     runs-on: ubuntu-latest
-     permissions:
-        actions: read
-        contents: read
-        security-events: write
-     steps:
-        - name: Checkout source code
-          uses: actions/checkout@v2
-        - run: git config --global --add safe.directory /github/workspace
-        - run: sed -i '/<!-- SECURITY:START -->/,/<!-- SECURITY:END -->/d' README.md
-        - run: echo '<!-- SECURITY:START -->' >> README.md
-        - run: cat SECURITY.md >> README.md
-        - run: echo '<!-- SECURITY:END -->' >> README.md
-        - name: push
-          uses: actions-x/commit@v2
-       
-          env:
-             GITHUB_TOKEN: ${{ secrets.TOKEN }}  # Needed to get PR information, if any
-          with:
-             name: GitHub Actions Autocommitter
-             files: ./README.md
-             message: '[GITOPS] updated README with latest changes'
+    name: 
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - run: git config --global --add safe.directory /github/workspace
+      - run: sed -i '/<!-- SECURITY:START -->/,/<!-- SECURITY:END -->/d' README.md
+      - run: echo '<!-- SECURITY:START -->' >> README.md
+      - run: cat SECURITY.md >> README.md
+      - run: echo '<!-- SECURITY:END -->' >> README.md
+      - name: push
+        uses: actions-x/commit@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}  # Needed to get PR information, if any
+        with:
+          name: GitHub Actions Autocommitter
+          files: ./README.md
+          message: '[GITOPS] updated README with latest changes'
