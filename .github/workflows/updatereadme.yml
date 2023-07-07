@@ -37,4 +37,4 @@ jobs:
           git commit -m "[GITOPS] updated README with latest changes"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
