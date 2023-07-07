@@ -15,12 +15,14 @@ permissions:
   
 jobs:
   build:
-    name: 
+    name: update readme
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
+      pull-requests: write
+      repository-projects: write
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
