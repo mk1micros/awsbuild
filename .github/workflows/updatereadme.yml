@@ -7,7 +7,12 @@ on:
       - stable
   pull_request:
     types: [open, synchronize]
-
+    
+permissions:
+  pull-requests: write
+  issues: write
+  repository-projects: write
+  
 jobs:
   build:
     name: 
