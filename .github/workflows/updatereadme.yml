@@ -36,3 +36,5 @@ jobs:
           git config user.email "actions@github.com"
           git commit -m "[GITOPS] updated README with latest changes"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
