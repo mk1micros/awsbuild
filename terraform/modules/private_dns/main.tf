@@ -31,12 +31,12 @@ lifecycle {
 ignore_changes = [vpc]
 }
 
-tags = merge(
-var.tags_common,
-{
-Name = "${var.tags_prefix}-internal-zone"
-},
-)
+#tags = merge(
+#var.tags_common,
+#{
+#Name = "${var.tags_prefix}-internal-zone"
+#},
+#)
 }
 
 resource "aws_route53_zone_association" "extend" {
