@@ -8,8 +8,10 @@ on:
       - 'terraform/modules/**/*.md'
       - '.github/workflows/documentation.yml'
 
-permissions: {}
-
+permissions:
+ pull-requests: write
+  issues: write
+  repository-projects: write
 
 jobs:
   docs:
