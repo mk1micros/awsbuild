@@ -1,23 +1,27 @@
 locals {
-modernisation-platform-domain = "modernisation-platform.service.justice.gov.uk"
-modernisation-platform-internal-domain = "modernisation-platform.internal"
 
-account_names = [for key, account in var.accounts : account]
-environment_id = { for key, env in var.environments : key => env }
+mk1micros-domain = "modernisation-platform.service.justice.gov.uk"
+mk1micros-internal-domain = "mk1micros.internal"
 
-account_numbers = concat(flatten([
-for value in flatten(local.account_names) :
-local.environment_id.account_ids[value]
-]),
-[var.modernisation_platform_account]
-)
+#account_names = [for key, account in var.accounts : account]
+#environment_id = { for key, env in var.environments : key => env }
+
+#account_numbers = concat(flatten([
+#for value in flatten(local.account_names) :
+#local.environment_id.account_ids[value]
+#]),
+#[var.modernisation_platform_account]
+#)
+
 
 }
 
 
 resource "aws_route53_zone" "private" {
 
-name = "${var.dns_zone}.${local.modernisation-platform-internal-domain}"
+
+name = "${var.dns_zone}.${local.mk1micros-internal-domain}"
+
 
 vpc {
 vpc_id = var.vpc_id
