@@ -1,4 +1,5 @@
 locals {
+
 mk1micros-domain = "modernisation-platform.service.justice.gov.uk"
 mk1micros-internal-domain = "mk1micros.internal"
 
@@ -12,12 +13,15 @@ mk1micros-internal-domain = "mk1micros.internal"
 #[var.modernisation_platform_account]
 #)
 
+
 }
 
 
 resource "aws_route53_zone" "private" {
 
+
 name = "${var.dns_zone}.${local.mk1micros-internal-domain}"
+
 
 vpc {
 vpc_id = var.vpc_id
