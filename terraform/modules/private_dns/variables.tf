@@ -6,7 +6,7 @@ variable "vpc_id" {
 type = string
 }
 
-variable "dns_domain" {
+variable "dns_zone" {
 type = string
 
 }
