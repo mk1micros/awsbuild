@@ -10,7 +10,7 @@ mk1micros-internal-domain = "mk1micros.internal"
 #for value in flatten(local.account_names) :
 #local.environment_id.account_ids[value]
 #]),
-#[var.modernisation_platform_account]
+#[var.mk1micros_account]
 #)
 
 
