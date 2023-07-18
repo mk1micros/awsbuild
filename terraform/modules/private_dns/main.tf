@@ -1,6 +1,6 @@
 locals {
 
-mk1micros-domain = "modernisation-platform.service.justice.gov.uk"
+mk1micros-domain = "mk1micros.co.uk"
 mk1micros-internal-domain = "mk1micros.internal"
 
 #account_names = [for key, account in var.accounts : account]
