@@ -39,8 +39,13 @@ ignore_changes = [vpc]
 #)
 }
 
-resource "aws_route53_zone_association" "extend" {
+resource "aws_route53_vpc_association_authorization" "vpc_auth" {
+    vpc_id = var.vpc_id2
+    zone_id = aws_route53_zone.private.zone_id
+  
+}
 
-zone_id = aws_route53_zone.private.zone_id
-vpc_id = var.vpc_id2
+resource "aws_route53_zone_association" "extend" {
+    zone_id = aws_route53_vpc_association_authorization.vpc_auth.zone_id
+    vpc_id = aws_route53_vpc_association_authorization.vpc_auth.vpc_id
 }
