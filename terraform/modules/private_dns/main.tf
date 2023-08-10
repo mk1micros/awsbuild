@@ -1,6 +1,6 @@
 locals {
 
-mk1micros-domain = "modernisation-platform.service.justice.gov.uk"
+mk1micros-domain = "mk1micros.co.uk"
 mk1micros-internal-domain = "mk1micros.internal"
 
 #account_names = [for key, account in var.accounts : account]
@@ -10,7 +10,7 @@ mk1micros-internal-domain = "mk1micros.internal"
 #for value in flatten(local.account_names) :
 #local.environment_id.account_ids[value]
 #]),
-#[var.modernisation_platform_account]
+#[var.mk1micros_account]
 #)
 
 
@@ -46,7 +46,6 @@ resource "aws_route53_vpc_association_authorization" "vpc_auth" {
 }
 
 resource "aws_route53_zone_association" "extend" {
-
-zone_id = aws_route53_vpc_association_authorization.vpc_auth.zone_id
-vpc_id = aws_route53_vpc_association_authorization.vpc_auth.vpc_id
+    zone_id = aws_route53_vpc_association_authorization.vpc_auth.zone_id
+    vpc_id = aws_route53_vpc_association_authorization.vpc_auth.vpc_id
 }
