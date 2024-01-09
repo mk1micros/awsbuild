@@ -1,5 +1,5 @@
-name: Modernisation platform Story
-description: 📖 Create new Modernisation platform DevOps story
+name: Mk1micro Story
+description: 📖 Create new mk1micros DevOps story
 title: "[gitmoji] <title>"
 labels: ["needs refining"]
 body:
@@ -11,10 +11,10 @@ body:
     id: user-story
     attributes:
       label: User Story
-        placeholder: "As a… [who is the user?] 
+      placeholder: "As a… [who is the user?] 
                     I need/want/expect to… [what does the user want to do?]
                     So that… [why does the user want to do this?] "
-        value: "As a… 
+      value: "As a… 
 
                I need/want/expect to… 
 
@@ -53,19 +53,15 @@ body:
       label: Definition of Done
       value:
 
-            Example
-            - [ ] Documentation has been written / updated
+        Example
+        - [ ] Documentation has been written / updated
 
-            - [ ] README has been updated 
+        - [ ] README has been updated 
 
-            - [ ] User docs have been updated 
+        - [ ] User docs have been updated 
 
-            - [ ] Another team member has reviewed 
+        - [ ] Another team member has reviewed 
 
-            - [ ] Tests are green
+        - [ ] Tests are green
     validations:
       required: false
-  - type: markdown
-    attributes:
-      value: |
-            [How to write good user stories](https://www.gov.uk/service-manual/agile-delivery/writing-user-stories)
