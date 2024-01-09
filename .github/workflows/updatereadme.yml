@@ -6,7 +6,7 @@ on:
       - main
       - stable
   pull_request:
-    types: [open, synchronize]
+    types: [opened, synchronize]
     
 permissions:
   pull-requests: write
