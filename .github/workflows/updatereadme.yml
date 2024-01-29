@@ -38,10 +38,12 @@ jobs:
         run: rm temp.md
       - name: Commit changes
         run: |
+          git branch readme
+          git checkout readme
           git add README.md
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git commit -m "[GITOPS] updated README with latest changes"
-          git push
+          git push HEAD:readme
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
