@@ -18,8 +18,8 @@ jobs:
     name: update readme
     runs-on: ubuntu-latest
     permissions:
-      actions: read
-      contents: read
+      actions: write
+      contents: write
       security-events: write
       pull-requests: write
       repository-projects: write
