@@ -139,4 +139,17 @@ resource "aws_main_route_table_association" "set-worker-default-rt-assoc" {
   route_table_id = aws_route_table.internet_route_london.id
 }
 
+resource "aws_flow_log" "london_flowlogs" {
+  depends_on            = [aws_subnet.subnet_1]
+  log_destination       = aws_cloudwatch_log_group.london_flow_log_group.arn
+  traffic_type          = "ALL"
+  log_format            = "TEXT"
+  max_aggregation_interval = 60
+
+  subnet_id = aws_subnet.subnet_1.id
+}
+
+resource "aws_cloudwatch_log_group" "london_flow_log_group" {
+  name = "london-flow-log-group"
+}
 
