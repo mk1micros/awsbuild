@@ -30,7 +30,7 @@ variable "webserver_port" {
   type    = number
   default = 8080
 }
-variable "dns-name" {
+variable "dns_name" {
   type    = string
   default = "mk1micros.co.uk."
 }
