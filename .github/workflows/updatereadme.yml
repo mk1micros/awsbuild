@@ -38,6 +38,7 @@ jobs:
         run: rm temp.md
       - name: Commit changes
         run: |
+          git checkout main
           git pull
           git branch readme
           git checkout readme
