@@ -4,8 +4,15 @@ on:
   push:
     branches:
       - main  # Replace with your preferred branch
+  pull_request:
+    paths:
+      - 'terraform/**'
+    branches:
+      - main
+    types: [opened, edited,reopened, synchronised]
 
 jobs:
+
   terraform:
     runs-on: ubuntu-latest
 
