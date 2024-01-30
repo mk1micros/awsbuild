@@ -41,7 +41,8 @@ jobs:
           git pull origin main
           git branch readme
           git checkout readme
-          git --rebase origin main
+          git config pull.rebase true
+          git rebase origin main
           git add README.md
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
