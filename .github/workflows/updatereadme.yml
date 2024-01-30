@@ -38,7 +38,7 @@ jobs:
         run: rm temp.md
       - name: Commit changes
         run: |
-          git pull
+          git pull origin main
           git branch readme
           git checkout readme
           git rebase origin main
