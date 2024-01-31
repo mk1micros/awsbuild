@@ -35,7 +35,7 @@ jobs:
           image-ref: 'ghcr.io/aquasecurity/trivy:latest'
           format: 'sarif'
           scan-type: 'fs'
-          scan-ref: './'
+          scan-ref: '.'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
 
