@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -21,7 +21,7 @@ jobs:
         aws-region: eu-west-2
 
     - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: "latest"
 
