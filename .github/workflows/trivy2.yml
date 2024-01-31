@@ -34,6 +34,7 @@ jobs:
         with:
           image-ref: 'ghcr.io/aquasecurity/trivy:latest'
           format: 'sarif'
+          scanners: 'vuln, secret, misconfig' 
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
 
