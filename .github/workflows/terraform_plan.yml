@@ -10,9 +10,7 @@ jobs:
   terraform_pr:
     runs-on: ubuntu-latest   
     permissions:
-      pull-requests: write
-    run:
-      working-directory: ${{ env.tf_actions_working_dir }}      
+      pull-requests: write    
     steps:
     - uses: actions/checkout@v4
     - uses: hashicorp/setup-terraform@v3
@@ -27,17 +25,21 @@ jobs:
     - name: Terraform fmt
       id: fmt
       run: terraform fmt -check
+      working-directory: terraform/
       continue-on-error: true
     
     - name: Terraform Init
       id: init
       run: terraform init
+      working-directory: terraform/
     
     - name: Terraform Validate
       id: validate
       run: terraform validate -no-color
+      working-directory: terraform/
     
     - name: Terraform Plan
       id: plan
       run: terraform plan -no-color
+      working-directory: terraform/
       continue-on-error: true
