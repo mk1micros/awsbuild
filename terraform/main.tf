@@ -1,15 +1,15 @@
-resource "aws_lb" "application-lb" {
-  provider           = aws.region-master
-  name               = "test-lb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.lb-sg.id]
-  subnets            = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
-  tags = {
-    Name = "test-LB"
-  }
-  drop_invalid_header_fields = true
-}
+# resource "aws_lb" "application-lb" {
+#   provider           = aws.region-master
+#   name               = "test-lb"
+#   internal           = false
+#   load_balancer_type = "application"
+#   security_groups    = [aws_security_group.lb-sg.id]
+#   subnets            = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
+#   tags = {
+#     Name = "test-LB"
+#   }
+#   drop_invalid_header_fields = true
+# }
 
 # data "aws_lb" "aws_lb_data" {
 #     name = aws_lb.application-lb.name

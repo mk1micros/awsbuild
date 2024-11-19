@@ -141,22 +141,98 @@ resource "aws_main_route_table_association" "set-worker-default-rt-assoc" {
 
 resource "aws_kms_key" "flowlog_kms_key" {
   description             = "VPC Flow Logs Encryption Key"
+  key_usage = "ENCRYPT_DECRYPT"
   enable_key_rotation     = true
 }
 
-resource "aws_flow_log" "london_flowlogs" {
-  depends_on            = [aws_subnet.subnet_1]
-  log_destination       = aws_cloudwatch_log_group.london_flow_log_group.arn
-  traffic_type          = "ALL"
-  log_format            = "TEXT"
-  max_aggregation_interval = 60
-  
+resource "aws_kms_key_policy" "flowlog_kms_key_policy" {
+  key_id = aws_kms_key.flowlog_kms_key.id
+  policy = jsonencode({
+    Id = "flowlog policy"
+    Statement = [
+      {
+       Sid      = "Enable IAM User Permissions"
+        Effect   = "Allow"
+        Principal = {
+          AWS = "*"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+      
+        Sid = "Allow CloudWatch Logs Use of the Key"
+        Effect = "Allow"
+        Principal = {
+          Service = "logs.${var.region-master}.amazonaws.com"
+        }
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+      },
+    ]
+    Version = "2012-10-17"
+  })
+}
 
-  subnet_id = aws_subnet.subnet_1.id
+resource "aws_flow_log" "london_flowlogs" {
+  log_destination_type = "cloud-watch-logs"
+  log_destination       = aws_cloudwatch_log_group.london_flow_log_group.arn
+  iam_role_arn = aws_iam_role.flowlog_iam_role.arn
+  traffic_type          = "ALL"
+  max_aggregation_interval = 60
+  vpc_id = aws_vpc.vpc_master.id
+
+  
 }
 
 resource "aws_cloudwatch_log_group" "london_flow_log_group" {
+  depends_on = [ aws_kms_key.flowlog_kms_key ]
   name = "london-flow-log-group"
-  kms_key_id = aws_kms_key.flowlog_kms_key.id
+  kms_key_id = aws_kms_key.flowlog_kms_key.arn
 }
 
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["vpc-flow-logs.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "flowlog_iam_role" {
+  name               = "flowlog_iam_role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+data "aws_iam_policy_document" "flowlog_iam_policy_doc" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "flowlog_iam_policy" {
+  name   = "flowlog_iam_policy"
+  role   = aws_iam_role.flowlog_iam_role.id
+  policy = data.aws_iam_policy_document.flowlog_iam_policy_doc.json
+}
