@@ -13,8 +13,6 @@ jobs:
       pull-requests: write    
     steps:
     - uses: actions/checkout@v4
-      with:
-        path: terraform
 
     - name: Set up AWS credentials
       uses: aws-actions/configure-aws-credentials@v4.0.2
@@ -35,15 +33,12 @@ jobs:
     - name: Terraform Init
       id: init
       run: terraform init
-      working-directory: terraform/
     
     - name: Terraform Validate
       id: validate
       run: terraform validate -no-color
-      working-directory: terraform/
     
     - name: Terraform Plan
       id: plan
       run: terraform plan -no-color
-      working-directory: terraform/
       continue-on-error: true
