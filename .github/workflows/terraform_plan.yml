@@ -27,7 +27,7 @@ jobs:
         AWS_PROFILE: ''
         
     - name: List files in terraform directory
-        run: ls -R terraform/
+      run: ls -R terraform/
         
     - uses: hashicorp/setup-terraform@v3.1.2
 
