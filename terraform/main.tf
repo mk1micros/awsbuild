@@ -31,3 +31,9 @@
 #     aws_lb = data.aws_lb_data.name
   
 # }
+resource "aws_s3_object" "file_upload" {
+	bucket = "mk1web"
+	key = "cloudformation.yaml"
+	source = "./cloudformation/cloudformation.yaml"
+	acl = "private"
+}
