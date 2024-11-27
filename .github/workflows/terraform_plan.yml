@@ -25,27 +25,30 @@ jobs:
         aws-region: eu-west-2
       env:
         AWS_PROFILE: ''
-
+        
+    - name: List files in terraform directory
+        run: ls -R terraform/
+        
     - uses: hashicorp/setup-terraform@v3.1.2
 
     - name: Terraform fmt
       id: fmt
       run: terraform fmt -check
-      working-directory: terraform  # Specify the working directory for this step
+      working-directory: terraform/  # Specify the working directory for this step
       continue-on-error: true
 
     - name: Terraform Init
       id: init
       run: terraform init
-      working-directory: terraform  # Specify the working directory for this step
+      working-directory: terraform/  # Specify the working directory for this step
 
     - name: Terraform Validate
       id: validate
       run: terraform validate -no-color
-      working-directory: terraform  # Specify the working directory for this step
+      working-directory: terraform/  # Specify the working directory for this step
 
     - name: Terraform Plan
       id: plan
       run: terraform plan -no-color
-      working-directory: terraform  # Specify the working directory for this step
+      working-directory: terraform/  # Specify the working directory for this step
       continue-on-error: true
