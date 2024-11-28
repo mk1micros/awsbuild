@@ -11,10 +11,10 @@
 #   drop_invalid_header_fields = true
 # }
 
-# data "aws_lb" "aws_lb_data" {
-#     name = aws_lb.application-lb.name
-  
-# }
+
+data "aws_lb" "web_alb" {
+  name = "web-alb"  # Replace with the name of your existing ALB
+}
 
 # module "privatedns" {
 #     source = "./modules/private_dns"
@@ -24,13 +24,14 @@
   
 # }
 
-# module "core_dns" {
-#     source = "./modules/external_dns"
-#     dns_name = var.dns_name
-#     dns_record = "test"
-#     aws_lb = data.aws_lb_data.name
+ module "core_dns" {
+     source = "./modules/external_dns"
+     dns_name = var.dns_name
+     dns_record = "test"
+     alb_dns_name = data.aws_lb.web_alb.dns_name
+	 alb_zone_id = data.aws_lb.web_alb.zone_id
   
-# }
+ }
 resource "aws_s3_object" "file_upload" {
 	bucket = "mk1web"
 	key = "cloudformation.yaml"
