@@ -63,26 +63,26 @@ resource "aws_lb_listener" "web_listener" {
 }
 
 # Fetch the existing ACM certificate by domain name
-data "aws_acm_certificate" "mk1micros_cert" {
-  domain   = "test.mk1micros.co.uk"  # The domain name for your certificate
-  most_recent = true  # Ensure that we get the most recent certificate if there are multiple
-  statuses = ["ISSUED"]  # Only select certificates that are issued
-}
+#data "aws_acm_certificate" "mk1micros_cert" {
+#  domain   = "test.mk1micros.co.uk"  # The domain name for your certificate
+#  most_recent = true  # Ensure that we get the most recent certificate if there are multiple
+#  statuses = ["ISSUED"]  # Only select certificates that are issued
+#}
 
 # ALB Listener for HTTPS (Port 443)
-resource "aws_lb_listener" "web_listener_https" {
-  load_balancer_arn = aws_lb.web_alb.arn
-  port              = 443
-  protocol          = "HTTPS"
+#resource "aws_lb_listener" "web_listener_https" {
+#  load_balancer_arn = aws_lb.web_alb.arn
+#  port              = 443
+#  protocol          = "HTTPS"
 
-  ssl_policy        = "ELBSecurityPolicy-2016-08"  # Or another recommended policy
-  certificate_arn   = data.aws_acm_certificate.mk1micros_cert.arn  # ACM SSL certificate ARN
+#  ssl_policy        = "ELBSecurityPolicy-2016-08"  # Or another recommended policy
+#  certificate_arn   = data.aws_acm_certificate.mk1micros_cert.arn  # ACM SSL certificate ARN
 
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.web_target_group.arn
-  }
-}
+#  default_action {
+#    type             = "forward"
+#    target_group_arn = aws_lb_target_group.web_target_group.arn
+#  }
+#}
 
 # ECS Cluster
 resource "aws_ecs_cluster" "web_cluster" {
@@ -156,6 +156,25 @@ resource "aws_ecs_task_definition" "web_task" {
     }]
   }])
 }
+resource "aws_service_discovery_private_dns_namespace" "web_namespace" {
+  name        = "production" # Replace with your preferred namespace
+  vpc         = data.aws_vpc.main.id
+  description = "Service discovery namespace for web service"
+}
+
+resource "aws_service_discovery_service" "web_discovery_service" {
+  name = "roduction-service" # Service name registered in the namespace
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.web_namespace.id
+    dns_records {
+      type  = "A"   # Use "A" for IPv4, "AAAA" for IPv6
+      ttl   = 60    # Time to live for DNS records
+    }
+  }
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
 
 # ECS Fargate Service
 resource "aws_ecs_service" "web_service" {
@@ -175,6 +194,9 @@ resource "aws_ecs_service" "web_service" {
     target_group_arn = aws_lb_target_group.web_target_group.arn
     container_name   = "mk1micros-container"
     container_port   = 80
+  }
+  service_registries {
+    registry_arn = aws_service_discovery_service.web_discovery_service.arn
   }
 
   depends_on = [

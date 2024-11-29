@@ -13,6 +13,7 @@ resource "aws_acm_certificate" "mk1micros-lb-https" {
 
 # DNS Validation Record for ACM
 resource "aws_route53_record" "mk1micros_dns_validation" {
+  depends_on = [aws_acm_certificate.mk1micros-lb-https]
   for_each = { for v in aws_acm_certificate.mk1micros-lb-https.domain_validation_options : v.resource_record_name => v }
 
   zone_id = data.aws_route53_zone.main.id
