@@ -23,8 +23,8 @@ resource "aws_route53_record" "dns_record" {
   name     = join(".", [var.dns_record, data.aws_route53_zone.dns.name])
   type     = "A"
   alias {
-    name                   = var.aws_lb.application-lb.dns_name
-    zone_id                = var.aws_lb.application-lb.zone_id
+    name                   = var.alb_dns_name  # Pass the ALB's DNS name
+    zone_id                = var.alb_zone_id   # Pass the ALB's Zone ID
     evaluate_target_health = true
   }
 }

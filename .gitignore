@@ -10,6 +10,7 @@ bin-release/
 **/.terraform/*
 **/.terraform/.terraform.lock*
 **/terraform/.terraform/*
+**/.vs/*
 # Executables
 *.swf
 *.air

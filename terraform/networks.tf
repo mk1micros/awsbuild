@@ -32,6 +32,15 @@ resource "aws_internet_gateway" "igw-london" {
   }
 }
 
+#Create VPC endpoint for ec2 connection
+resource "aws_ec2_instance_connect_endpoint" "master_vpc_endpoint" {
+  subnet_id = aws_subnet.subnet_2.id
+
+  tags = merge(local.tags, 
+    {Name = "EC connect master"}
+  )
+}
+
 #Create IGW in eu-west-1
 resource "aws_internet_gateway" "igw-ireland" {
   provider = aws.region-worker
