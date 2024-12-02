@@ -46,10 +46,14 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
+      - name: Stash changes
+        run: git stash
       - name: Fetch and merge remote changes
         run: |
           git fetch origin readme
           git merge origin/readme --no-ff
+      - name: Apply stashed changes
+        run: git stash pop
       - name: Commit changes
         run: |
           git add README.md
