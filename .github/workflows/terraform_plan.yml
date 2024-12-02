@@ -58,7 +58,7 @@ jobs:
       with: 
         github-token: ${{ secrets.GITHUB_TOKEN }} 
         script: | 
-          const fs = require('fs');
+          const fs = require('fs'); 
           const summary = fs.readFileSync('terraform/terraform/plan_summary.txt', 'utf8'); 
-          const { context } = require('@actions/github'); const issue_number = context.payload.pull_request.number; 
+          const issue_number = context.payload.pull_request.number; 
           await github.rest.issues.createComment({ ...context.repo, issue_number, body: `### Terraform Plan Summary\n\`\`\`\n${summary}\n\`\`\`` });
