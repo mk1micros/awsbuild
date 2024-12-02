@@ -29,10 +29,14 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history so we can resolve conflicts
       - run: git config --global --add safe.directory /github/workspace
+      - name: Configure user for Git
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
       - name: Checkout the main branch
-        run: git checkout main
-      - name: Update main branch
-        run: git pull origin main --allow-unrelated-histories --no-rebase
+        run: |
+          git checkout main
+          git pull origin main --allow-unrelated-histories --no-rebase
       - run: sed -i '/<!-- SECURITY:START -->/,/<!-- SECURITY:END -->/d' README.md
       - name: Create temporary file
         run: echo '' > temp.md
@@ -42,22 +46,11 @@ jobs:
         run: cat temp.md >> README.md
       - name: Remove temporary file
         run: rm temp.md
-      - name: Configure user for Git
+      - name: Commit changes to a new branch
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-      - name: Stash changes
-        run: git stash
-      - name: Fetch and merge remote changes
-        run: |
-          git fetch origin readme
-          git merge origin/readme --no-ff
-      - name: Apply stashed changes
-        run: git stash pop
-      - name: Commit changes
-        run: |
+          git checkout -b update-readme
           git add README.md
-          git commit -m "[GITOPS] resolved conflicts and updated README with latest changes" || echo "No changes to commit"
-          git push --set-upstream origin readme
+          git commit -m "[GITOPS] updated README with latest changes"
+          git push --set-upstream origin update-readme
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
