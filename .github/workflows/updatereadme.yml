@@ -27,35 +27,31 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Fetch all history so we can resolve conflicts
       - run: git config --global --add safe.directory /github/workspace
+      - name: Checkout the main branch
+        run: git checkout main
+      - name: Update main branch
+        run: git pull origin main --allow-unrelated-histories --no-rebase
       - run: sed -i '/<!-- SECURITY:START -->/,/<!-- SECURITY:END -->/d' README.md
-
       - name: Create temporary file
         run: echo '' > temp.md
-
       - name: Append security content to temporary file
         run: cat SECURITY.md >> temp.md
-
       - name: Append temporary file to README.md
         run: cat temp.md >> README.md
-
       - name: Remove temporary file
         run: rm temp.md
-
-      - name: Commit changes 
-        run: | 
-          git config user.email "actions@github.com" 
-          git config --global user.name "githubaction"
-          git pull origin main --allow-unrelated-histories --no-rebase || true
-          git merge --strategy-option ours -m "Merge conflicts resolved" || git merge --strategy-option theirs -m "Merge conflicts resolved"
-        env: 
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          
-      - name: Commit changes 
-        run: | 
-          git add . 
-          git commit -m "[GITOPS] resolved conflicts and updated README with latest changes" 
-          git push --set-upstream origin readme 
-        env: 
+      - name: Configure user for Git
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+      - name: Commit changes
+        run: |
+          git add README.md
+          git commit -m "[GITOPS] updated README with latest changes"
+          git branch readme
+          git checkout readme
+          git push --set-upstream origin readme
+        env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
