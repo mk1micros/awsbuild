@@ -27,7 +27,7 @@ data "aws_lb" "web_alb" {
  module "core_dns" {
      source = "./modules/external_dns"
      dns_name = var.dns_name
-     dns_record = "www"
+     dns_record = "test"
      alb_dns_name = data.aws_lb.web_alb.dns_name
 	 alb_zone_id = data.aws_lb.web_alb.zone_id
   
