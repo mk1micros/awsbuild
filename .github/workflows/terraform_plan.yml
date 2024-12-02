@@ -43,9 +43,10 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-      run: terraform plan -no-color
+      run: terraform plan -no-color -out=tfplan
       working-directory: terraform/terraform  # Update working directory to point to terraform/terraform
       continue-on-error: true
+
     - name: Extract Plan Summary
       id: show 
       run: | 
