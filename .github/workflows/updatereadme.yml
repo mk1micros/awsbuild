@@ -43,13 +43,13 @@ jobs:
 
       - name: Commit changes 
         run: | 
+          git config user.email "actions@github.com" 
+          git config --global user.name "githubaction"
           git pull origin main --allow-unrelated-histories --no-rebase 
           git branch readme 
           git checkout readme 
           git config pull.rebase false 
           git add README.md git config user.name "GitHub Actions" 
-          git config user.email "actions@github.com" 
-          git config --global user.name "githubaction"
           git commit -m "[GITOPS] updated README with latest changes" 
           git push --set-upstream origin readme 
         env: 
