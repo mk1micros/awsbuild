@@ -7,12 +7,12 @@ on:
       - stable
   pull_request:
     types: [opened, synchronize]
-    
+
 permissions:
   pull-requests: write
   issues: write
   repository-projects: write
-  
+
 jobs:
   build:
     name: update readme
@@ -46,12 +46,14 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
+      - name: Fetch and merge remote changes
+        run: |
+          git fetch origin readme
+          git merge origin/readme --no-ff
       - name: Commit changes
         run: |
           git add README.md
-          git commit -m "[GITOPS] updated README with latest changes"
-          git branch readme
-          git checkout readme
+          git commit -m "[GITOPS] resolved conflicts and updated README with latest changes" || echo "No changes to commit"
           git push --set-upstream origin readme
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
