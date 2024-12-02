@@ -7,12 +7,12 @@ on:
       - stable
   pull_request:
     types: [opened, synchronize]
-    
+
 permissions:
   pull-requests: write
   issues: write
   repository-projects: write
-  
+
 jobs:
   build:
     name: update readme
@@ -26,7 +26,17 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history so we can resolve conflicts
       - run: git config --global --add safe.directory /github/workspace
+      - name: Configure user for Git
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+      - name: Checkout the main branch
+        run: |
+          git checkout main
+          git pull origin main --allow-unrelated-histories --no-rebase
       - run: sed -i '/<!-- SECURITY:START -->/,/<!-- SECURITY:END -->/d' README.md
       - name: Create temporary file
         run: echo '' > temp.md
@@ -36,17 +46,11 @@ jobs:
         run: cat temp.md >> README.md
       - name: Remove temporary file
         run: rm temp.md
-      - name: Commit changes
+      - name: Commit changes to a new branch
         run: |
-          git pull origin main
-          git branch readme
-          git checkout readme
-          git config pull.rebase true
-          git --rebase origin/main
+          git checkout -b update-readme
           git add README.md
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
           git commit -m "[GITOPS] updated README with latest changes"
-          git push --set-upstream origin readme
+          git push --set-upstream origin update-readme
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
