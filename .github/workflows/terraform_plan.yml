@@ -50,7 +50,7 @@ jobs:
     - name: Extract Plan Summary
       id: show 
       run: | 
-        terraform show -no-color tfplan | grep -E 'Plan:' > plan_summary.txt 
+        terraform show -no-color tfplan | grep -E 'Plan:|No changes. Your infrastructure matches the configuration.' > plan_summary.txt
       working-directory: terraform/terraform 
       
     - name: Post Comment 
