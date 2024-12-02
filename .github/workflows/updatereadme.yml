@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
       - run: git config --global --add safe.directory /github/workspace
       - run: sed -i '/<!-- SECURITY:START -->/,/<!-- SECURITY:END -->/d' README.md
-      
+
       - name: Create temporary file
         run: echo '' > temp.md
 
@@ -43,7 +43,7 @@ jobs:
 
       - name: Commit changes 
         run: | 
-          git pull origin main --no-rebase 
+          git pull origin main --allow-unrelated-histories --no-rebase 
           git branch readme 
           git checkout readme 
           git config pull.rebase false 
