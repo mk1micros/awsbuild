@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - run: git config --global --add safe.directory /github/workspace
       - run: sed -i '/<!-- SECURITY:START -->/,/<!-- SECURITY:END -->/d' README.md
 
@@ -45,12 +47,15 @@ jobs:
         run: | 
           git config user.email "actions@github.com" 
           git config --global user.name "githubaction"
-          git pull origin main --allow-unrelated-histories --no-rebase 
-          git branch readme 
-          git checkout readme 
-          git config pull.rebase false 
-          git add README.md git config user.name "GitHub Actions" 
-          git commit -m "[GITOPS] updated README with latest changes" 
+          git pull origin main --allow-unrelated-histories --no-rebase || true
+          git merge --strategy-option ours -m "Merge conflicts resolved" || git merge --strategy-option theirs -m "Merge conflicts resolved"
+        env: 
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          
+      - name: Commit changes 
+        run: | 
+          git add . 
+          git commit -m "[GITOPS] resolved conflicts and updated README with latest changes" 
           git push --set-upstream origin readme 
         env: 
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
