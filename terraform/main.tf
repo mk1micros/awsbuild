@@ -12,9 +12,9 @@
 # }
 
 
-data "aws_lb" "web_alb" {
-  name = "web-alb"  # Replace with the name of your existing ALB
-}
+# data "aws_lb" "web_alb" {
+#   name = "web-alb"  # Replace with the name of your existing ALB
+# }
 
 # module "privatedns" {
 #     source = "./modules/private_dns"
@@ -24,14 +24,14 @@ data "aws_lb" "web_alb" {
   
 # }
 
- module "core_dns" {
-     source = "./modules/external_dns"
-     dns_name = var.dns_name
-     dns_record = "test"
-     alb_dns_name = data.aws_lb.web_alb.dns_name
-	 alb_zone_id = data.aws_lb.web_alb.zone_id
+#  module "core_dns" {
+#      source = "./modules/external_dns"
+#      dns_name = var.dns_name
+#      dns_record = "test"
+#      alb_dns_name = data.aws_lb.web_alb.dns_name
+# 	 alb_zone_id = data.aws_lb.web_alb.zone_id
   
- }
+#  }
 resource "aws_s3_object" "file_upload" {
 	bucket = "mk1web"
 	key = "cloudformation.yaml"
