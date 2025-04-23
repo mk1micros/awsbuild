@@ -19,6 +19,17 @@ resource "aws_identitystore_group" "root_access_group" {
   display_name      = "RootAccessAdmins" # Name of the new group
 }
 
+# Fetch group by display name to get correct ID format
+data "aws_identitystore_group" "root_access_group" {
+  identity_store_id = data.aws_ssoadmin_instances.sso.identity_store_ids[0]
+
+  filter {
+    attribute_path  = "DisplayName"
+    attribute_value = "RootAccessAdmins"
+  }
+}
+
+
 # Create the permission set for RootAccess (without inline_policy)
 resource "aws_ssoadmin_permission_set" "root_access" {
   instance_arn     = data.aws_ssoadmin_instances.sso.arns[0]
@@ -41,7 +52,7 @@ resource "aws_ssoadmin_account_assignment" "root_access_assignments" {
   instance_arn       = data.aws_ssoadmin_instances.sso.arns[0]
   permission_set_arn = aws_ssoadmin_permission_set.root_access.arn
   principal_type     = "GROUP"
-  principal_id       = aws_identitystore_group.root_access_group.id
+  principal_id       = data.aws_identitystore_group.root_access_group.group_id
   target_id          = each.key
   target_type        = "AWS_ACCOUNT"
 }
