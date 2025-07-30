@@ -42,6 +42,14 @@ jobs:
           echo "CNI=$CNI" >> $GITHUB_ENV
           echo "SSO_GROUP=$SSO_GROUP" >> $GITHUB_ENV
           echo "GO_LIVE_DATE=$GO_LIVE_DATE" >> $GITHUB_ENV
+    
+      - name: Debug extracted variables
+        run: |
+            echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT"
+            echo "APP_NAME=$APP_NAME"
+      - name: Print raw EXISTING_ACCOUNT
+        run: |
+            echo "Raw EXISTING_ACCOUNT: '$EXISTING_ACCOUNT'"
 
       - name: Run create-account.py for new accounts
         if: env.EXISTING_ACCOUNT == 'No'
