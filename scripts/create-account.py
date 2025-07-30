@@ -1,14 +1,13 @@
 import os
 import json
+import sys
 
 ENV_DIR = "environments"
 
 def application_exists(app_name):
-    # Check for file existence
     target_file = os.path.join(ENV_DIR, f"{app_name}.json")
     if os.path.exists(target_file):
         return True
-    # Optionally, check inside all files for duplicate "application" tags
     for fname in os.listdir(ENV_DIR):
         if fname.endswith(".json"):
             with open(os.path.join(ENV_DIR, fname)) as f:
@@ -48,19 +47,24 @@ def create_env_json(app_name, business_unit, infra_support, owner, slack_channel
     with open(os.path.join(ENV_DIR, f"{app_name}.json"), "w") as f:
         json.dump(data, f, indent=2)
 
-# Example usage:
-app_name = "example"  # Replace with value from issue
-if application_exists(app_name):
-    print(f"Application '{app_name}' already exists.")
-else:
-    create_env_json(
-        app_name=app_name,
-        business_unit="Platforms",
-        infra_support="modernisation-platform@digital.justice.gov.uk",
-        owner="Modernisation Platform: modernisation-platform@digital.justice.gov.uk",
-        slack_channel="modernisation-platform",
-        cni=False,
-        sso_group="modernisation-platform",
-        go_live_date=""
-    )
-    print(f"Created {app_name}.json")
+if __name__ == "__main__":
+    if len(sys.argv) < 9:
+        print("Usage: python create-account.py <app_name> <business_unit> <infra_support> <owner> <slack_channel> <cni> <sso_group> <go_live_date>")
+        sys.exit(1)
+    app_name, business_unit, infra_support, owner, slack_channel, cni, sso_group, go_live_date = sys.argv[1:9]
+    cni = cni.lower() == "true"
+    if application_exists(app_name):
+        print(f"Application '{app_name}' already exists.")
+        sys.exit(1)
+    else:
+        create_env_json(
+            app_name=app_name,
+            business_unit=business_unit,
+            infra_support=infra_support,
+            owner=owner,
+            slack_channel=slack_channel,
+            cni=cni,
+            sso_group=sso_group,
+            go_live_date=go_live_date
+        )
+        print(f"Created {app_name}.json")

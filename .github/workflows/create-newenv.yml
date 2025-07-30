@@ -19,23 +19,63 @@ jobs:
         run: |
           echo "${{ github.event.issue.body }}" > issue_body.txt
 
-      - name: Check if this is an existing account
-        id: check_existing
+      - name: Extract fields from issue
+        id: extract
         run: |
-          if grep -i "Is this an existing AWS account" issue_body.txt | grep -qi "yes"; then
-            echo "existing_account=true" >> $GITHUB_ENV
-          else
-            echo "existing_account=false" >> $GITHUB_ENV
-          fi
+          # Extract the "Is this an existing AWS account?" dropdown value
+          EXISTING_ACCOUNT=$(awk '/Is this an existing AWS account\?/ {getline; print $0}' issue_body.txt | xargs)
+          # Extract other fields (adjust grep/awk as needed for your template)
+          APP_NAME=$(awk '/Application Name/ {getline; print $0}' issue_body.txt | xargs)
+          BUSINESS_UNIT=$(awk '/business-unit/ {getline; print $0}' issue_body.txt | xargs)
+          INFRA_SUPPORT=$(awk '/infrastructure-support/ {getline; print $0}' issue_body.txt | xargs)
+          OWNER=$(awk '/owner/ {getline; print $0}' issue_body.txt | xargs)
+          SLACK_CHANNEL=$(awk '/slack-channel/ {getline; print $0}' issue_body.txt | xargs)
+          CNI=$(awk '/critical-national-infrastructure/ {getline; print $0}' issue_body.txt | xargs)
+          SSO_GROUP=$(awk '/SSO Group Name/ {getline; print $0}' issue_body.txt | xargs)
+          GO_LIVE_DATE=$(awk '/go-live-date/ {getline; print $0}' issue_body.txt | xargs)
+          echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT" >> $GITHUB_ENV
+          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+          echo "BUSINESS_UNIT=$BUSINESS_UNIT" >> $GITHUB_ENV
+          echo "INFRA_SUPPORT=$INFRA_SUPPORT" >> $GITHUB_ENV
+          echo "OWNER=$OWNER" >> $GITHUB_ENV
+          echo "SLACK_CHANNEL=$SLACK_CHANNEL" >> $GITHUB_ENV
+          echo "CNI=$CNI" >> $GITHUB_ENV
+          echo "SSO_GROUP=$SSO_GROUP" >> $GITHUB_ENV
+          echo "GO_LIVE_DATE=$GO_LIVE_DATE" >> $GITHUB_ENV
 
-      - name: Run amend script if existing account
-        if: env.existing_account == 'true'
+      - name: Run create-account.py for new accounts
+        if: env.EXISTING_ACCOUNT == 'No'
         run: |
-          python scripts/amend-accounts.py ... # add your arguments
+          python scripts/create-account.py \
+            "$APP_NAME" \
+            "$BUSINESS_UNIT" \
+            "$INFRA_SUPPORT" \
+            "$OWNER" \
+            "$SLACK_CHANNEL" \
+            "$CNI" \
+            "$SSO_GROUP" \
+            "$GO_LIVE_DATE"
 
-      - name: Run create script if new account
-        if: env.existing_account == 'false'
+      - name: Run amend-accounts.py for existing accounts
+        if: env.EXISTING_ACCOUNT == 'Yes'
         run: |
-          python scripts/create-account.py ... # add your arguments
+          python scripts/amend-accounts.py \
+            "$APP_NAME" \
+            # Add other arguments as needed for your amend script
 
-      # Add commit/push/PR steps as needed
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b env-request/${{ github.run_id }}
+          git add environments/
+          git commit -m "Automated environment request for $APP_NAME"
+          git push --set-upstream origin env-request/${{ github.run_id }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: env-request/${{ github.run_id }}
+          title: "Automated environment request for ${{ env.APP_NAME }}"
+          body: "This PR was created automatically from an environment request issue."
+          base: main
