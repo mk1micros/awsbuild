@@ -12,8 +12,8 @@ body:
       label: Is this an existing AWS account?
       description: Select 'Yes' if this request is for an account that already exists in AWS, otherwise select 'No' to request a new account.
       options:
-        - No
-        - Yes
+        - 'No'
+        - 'Yes'
     validations:
       required: true
   - type: textarea
