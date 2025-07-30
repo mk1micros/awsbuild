@@ -1,0 +1,41 @@
+name: Environment Request
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  handle-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Save issue body to file
+        run: |
+          echo "${{ github.event.issue.body }}" > issue_body.txt
+
+      - name: Check if this is an existing account
+        id: check_existing
+        run: |
+          if grep -i "Is this an existing AWS account" issue_body.txt | grep -qi "yes"; then
+            echo "existing_account=true" >> $GITHUB_ENV
+          else
+            echo "existing_account=false" >> $GITHUB_ENV
+          fi
+
+      - name: Run amend script if existing account
+        if: env.existing_account == 'true'
+        run: |
+          python scripts/amend-accounts.py ... # add your arguments
+
+      - name: Run create script if new account
+        if: env.existing_account == 'false'
+        run: |
+          python scripts/create-account.py ... # add your arguments
+
+      # Add commit/push/PR steps as needed
