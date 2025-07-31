@@ -31,13 +31,13 @@ jobs:
           get_value() {
             awk -v key="### $1" '$0==key {getline; print $0}' issue_body.txt | xargs
           }
-          EXISTING_ACCOUNT=$(get_value "existing-account")
-          APP_NAME=$(get_value "app-name")
-          APPLICATION=$(get_value "tag1")
-          BUSINESS_UNIT=$(get_value "tag2")
-          INFRA_SUPPORT=$(get_value "tag3")
-          OWNER=$(get_value "tag4")
-          SSO_GROUP=$(get_value "sso-group-name")
+          EXISTING_ACCOUNT=$(get_value "Is this an existing AWS account?")
+          APP_NAME=$(get_value "Application Name")
+          APPLICATION=$(get_value "application")
+          BUSINESS_UNIT=$(get_value "business-unit")
+          INFRA_SUPPORT=$(get_value "infrastructure-support")
+          OWNER=$(get_value "owner")
+          SSO_GROUP=$(get_value "SSO Group Name")
           # Add more as needed
           echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT" >> $GITHUB_ENV
           echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
@@ -46,6 +46,13 @@ jobs:
           echo "INFRA_SUPPORT=$INFRA_SUPPORT" >> $GITHUB_ENV
           echo "OWNER=$OWNER" >> $GITHUB_ENV
           echo "SSO_GROUP=$SSO_GROUP" >> $GITHUB_ENV
+          echo "Extracted EXISTING_ACCOUNT: '$EXISTING_ACCOUNT'"
+          echo "Extracted APP_NAME: '$APP_NAME'"
+          echo "Extracted APPLICATION: '$APPLICATION'"
+          echo "Extracted BUSINESS_UNIT: '$BUSINESS_UNIT'"
+          echo "Extracted INFRA_SUPPORT: '$INFRA_SUPPORT'"
+          echo "Extracted OWNER: '$OWNER'"
+          echo "Extracted SSO_GROUP: '$SSO_GROUP'"
 
       - name: Debug extracted variables
         run: |
