@@ -26,25 +26,20 @@ jobs:
           echo "-------------------------"
 
       - name: Extract fields from issue
-        id: extract
         run: |
-          get_value() {
-            awk -v key="### $1" '
-              $0==key {
-                while (getline > 0) {
-                  if ($0 ~ /^$/) continue;
-                  if ($0 ~ /^_No response_$/) {print ""; exit}
-                  print $0; exit
-                }
-              }
-            ' issue_body.txt | xargs
-          }
-          EXISTING_ACCOUNT=$(get_value "Is this an existing AWS account?")
-          APP_NAME=$(get_value "Application Name")
-          BUSINESS_UNIT=$(get_value "business-unit")
-          INFRA_SUPPORT=$(get_value "infrastructure-support")
-          OWNER=$(get_value "owner")
-          SSO_GROUP=$(get_value "SSO Group Name")
+          EXISTING_ACCOUNT=$(awk -v key="### Is this an existing AWS account?" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+          APP_NAME=$(awk -v key="### Application Name" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+          BUSINESS_UNIT=$(awk -v key="### business-unit" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+          INFRA_SUPPORT=$(awk -v key="### infrastructure-support" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+          OWNER=$(awk -v key="### owner" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+          SSO_GROUP=$(awk -v key="### SSO Group Name" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+      
+          echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT" >> $GITHUB_ENV
+          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+          echo "BUSINESS_UNIT=$BUSINESS_UNIT" >> $GITHUB_ENV
+          echo "INFRA_SUPPORT=$INFRA_SUPPORT" >> $GITHUB_ENV
+          echo "OWNER=$OWNER" >> $GITHUB_ENV
+          echo "SSO_GROUP=$SSO_GROUP" >> $GITHUB_ENV
 
       - name: Debug extracted variables
         run: |
