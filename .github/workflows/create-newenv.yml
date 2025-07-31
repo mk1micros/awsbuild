@@ -19,7 +19,7 @@ jobs:
         run: |
           echo "${{ github.event.issue.body }}" > issue_body.txt
 
-      - name: Debug: print issue_body.txt
+      - name: Debug print issue_body.txt
         run: |
           echo "----- issue_body.txt -----"
           cat issue_body.txt
