@@ -22,36 +22,41 @@ jobs:
       - name: Extract fields from issue
         id: extract
         run: |
-            get_value() {
+          get_value() {
             awk -v key="### $1" '$0==key {getline; print $0}' issue_body.txt | xargs
-            }
-            EXISTING_ACCOUNT=$(get_value "Is this an existing AWS account?")
-            APP_NAME=$(get_value "Application Name")
-            BUSINESS_UNIT=$(get_value "tag2")
-            INFRA_SUPPORT=$(get_value "tag3")
-            OWNER=$(get_value "tag4")
-            SLACK_CHANNEL=$(get_value "slack-channel")
-            CNI=$(get_value "critical-national-infrastructure")
-            SSO_GROUP=$(get_value "SSO Group Name")
-            GO_LIVE_DATE=$(get_value "go-live-date")
-            echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT" >> $GITHUB_ENV
-            echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-            echo "BUSINESS_UNIT=$BUSINESS_UNIT" >> $GITHUB_ENV
-            echo "INFRA_SUPPORT=$INFRA_SUPPORT" >> $GITHUB_ENV
-            echo "OWNER=$OWNER" >> $GITHUB_ENV
-            echo "SLACK_CHANNEL=$SLACK_CHANNEL" >> $GITHUB_ENV
-            echo "CNI=$CNI" >> $GITHUB_ENV
-            echo "SSO_GROUP=$SSO_GROUP" >> $GITHUB_ENV
-            echo "GO_LIVE_DATE=$GO_LIVE_DATE" >> $GITHUB_ENV
-            echo "Extracted EXISTING_ACCOUNT: '$EXISTING_ACCOUNT'"
+          }
+          EXISTING_ACCOUNT=$(get_value "existing-account")
+          APP_NAME=$(get_value "app-name")
+          BUSINESS_UNIT=$(get_value "tag2")
+          INFRA_SUPPORT=$(get_value "tag3")
+          OWNER=$(get_value "tag4")
+          SLACK_CHANNEL=$(get_value "slack-channel")
+          CNI=$(get_value "critical-national-infrastructure")
+          SSO_GROUP=$(get_value "sso-group-name")
+          GO_LIVE_DATE=$(get_value "go-live-date")
+          echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT" >> $GITHUB_ENV
+          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+          echo "BUSINESS_UNIT=$BUSINESS_UNIT" >> $GITHUB_ENV
+          echo "INFRA_SUPPORT=$INFRA_SUPPORT" >> $GITHUB_ENV
+          echo "OWNER=$OWNER" >> $GITHUB_ENV
+          echo "SLACK_CHANNEL=$SLACK_CHANNEL" >> $GITHUB_ENV
+          echo "CNI=$CNI" >> $GITHUB_ENV
+          echo "SSO_GROUP=$SSO_GROUP" >> $GITHUB_ENV
+          echo "GO_LIVE_DATE=$GO_LIVE_DATE" >> $GITHUB_ENV
+          echo "Extracted EXISTING_ACCOUNT: '$EXISTING_ACCOUNT'"
             
       - name: Debug extracted variables
         run: |
             echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT"
             echo "APP_NAME=$APP_NAME"
+            
       - name: Print raw EXISTING_ACCOUNT
         run: |
             echo "Raw EXISTING_ACCOUNT: '$EXISTING_ACCOUNT'"
+            
+      - name: Debug extracted variables
+        run: |
+          env | grep -E 'EXISTING_ACCOUNT|APP_NAME|BUSINESS_UNIT|INFRA_SUPPORT|OWNER|SLACK_CHANNEL|CNI|SSO_GROUP|GO_LIVE_DATE'
 
       - name: Run create-account.py for new accounts
         if: env.EXISTING_ACCOUNT == 'No'
