@@ -27,23 +27,26 @@ jobs:
           }
           EXISTING_ACCOUNT=$(get_value "existing-account")
           APP_NAME=$(get_value "app-name")
+          APPLICATION=$(get_value "tag1")
           BUSINESS_UNIT=$(get_value "tag2")
           INFRA_SUPPORT=$(get_value "tag3")
           OWNER=$(get_value "tag4")
-          SLACK_CHANNEL=$(get_value "slack-channel")
-          CNI=$(get_value "critical-national-infrastructure")
           SSO_GROUP=$(get_value "sso-group-name")
-          GO_LIVE_DATE=$(get_value "go-live-date")
+          # Add more as needed
           echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT" >> $GITHUB_ENV
           echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+          echo "APPLICATION=$APPLICATION" >> $GITHUB_ENV
           echo "BUSINESS_UNIT=$BUSINESS_UNIT" >> $GITHUB_ENV
           echo "INFRA_SUPPORT=$INFRA_SUPPORT" >> $GITHUB_ENV
           echo "OWNER=$OWNER" >> $GITHUB_ENV
-          echo "SLACK_CHANNEL=$SLACK_CHANNEL" >> $GITHUB_ENV
-          echo "CNI=$CNI" >> $GITHUB_ENV
           echo "SSO_GROUP=$SSO_GROUP" >> $GITHUB_ENV
-          echo "GO_LIVE_DATE=$GO_LIVE_DATE" >> $GITHUB_ENV
           echo "Extracted EXISTING_ACCOUNT: '$EXISTING_ACCOUNT'"
+          echo "Extracted APP_NAME: '$APP_NAME'"
+          echo "Extracted APPLICATION: '$APPLICATION'"
+          echo "Extracted BUSINESS_UNIT: '$BUSINESS_UNIT'"
+          echo "Extracted INFRA_SUPPORT: '$INFRA_SUPPORT'"
+          echo "Extracted OWNER: '$OWNER'"
+          echo "Extracted SSO_GROUP: '$SSO_GROUP'"
             
       - name: Debug extracted variables
         run: |
