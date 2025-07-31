@@ -54,6 +54,7 @@ jobs:
       - name: Run create-account.py for new accounts
         if: env.EXISTING_ACCOUNT == 'No'
         run: |
+          ls -l scripts
           python scripts/create-account.py \
             "$APP_NAME" \
             "$BUSINESS_UNIT" \
