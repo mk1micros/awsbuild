@@ -44,7 +44,7 @@ jobs:
           BUSINESS_UNIT=$(get_value "business-unit")
           INFRA_SUPPORT=$(get_value "infrastructure-support")
           OWNER=$(get_value "owner")
-          SSO_GROUP=$(get_value "SSO
+          SSO_GROUP=$(get_value "SSO Group Name")
 
       - name: Debug extracted variables
         run: |
