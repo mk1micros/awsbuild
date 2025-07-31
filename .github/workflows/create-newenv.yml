@@ -18,6 +18,12 @@ jobs:
       - name: Save issue body to file
         run: |
           echo "${{ github.event.issue.body }}" > issue_body.txt
+          
+      - name: Debug print issue_body
+        run: |
+          echo "----- issue_body.txt -----"
+          cat issue_body.txt
+          echo "-------------------------"
 
       - name: Extract fields from issue
         id: extract
