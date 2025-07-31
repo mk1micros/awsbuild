@@ -72,6 +72,9 @@ jobs:
             "$APP_NAME" \
             # Add other arguments as needed for your amend script
 
+      - name: Show created JSON
+        run: cat environments/test.json
+
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
