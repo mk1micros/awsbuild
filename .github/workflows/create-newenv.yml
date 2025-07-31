@@ -18,8 +18,8 @@ jobs:
       - name: Save issue body to file
         run: |
           echo "${{ github.event.issue.body }}" > issue_body.txt
-          
-      - name: Debug print issue_body
+
+      - name: Debug: print issue_body.txt
         run: |
           echo "----- issue_body.txt -----"
           cat issue_body.txt
@@ -46,26 +46,16 @@ jobs:
           echo "INFRA_SUPPORT=$INFRA_SUPPORT" >> $GITHUB_ENV
           echo "OWNER=$OWNER" >> $GITHUB_ENV
           echo "SSO_GROUP=$SSO_GROUP" >> $GITHUB_ENV
-          echo "Extracted EXISTING_ACCOUNT: '$EXISTING_ACCOUNT'"
-          echo "Extracted APP_NAME: '$APP_NAME'"
-          echo "Extracted APPLICATION: '$APPLICATION'"
-          echo "Extracted BUSINESS_UNIT: '$BUSINESS_UNIT'"
-          echo "Extracted INFRA_SUPPORT: '$INFRA_SUPPORT'"
-          echo "Extracted OWNER: '$OWNER'"
-          echo "Extracted SSO_GROUP: '$SSO_GROUP'"
-            
+
       - name: Debug extracted variables
         run: |
-            echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT"
-            echo "APP_NAME=$APP_NAME"
-            
-      - name: Print raw EXISTING_ACCOUNT
-        run: |
-            echo "Raw EXISTING_ACCOUNT: '$EXISTING_ACCOUNT'"
-            
-      - name: Debug extracted variables
-        run: |
-          env | grep -E 'EXISTING_ACCOUNT|APP_NAME|BUSINESS_UNIT|INFRA_SUPPORT|OWNER|SLACK_CHANNEL|CNI|SSO_GROUP|GO_LIVE_DATE'
+          echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT"
+          echo "APP_NAME=$APP_NAME"
+          echo "APPLICATION=$APPLICATION"
+          echo "BUSINESS_UNIT=$BUSINESS_UNIT"
+          echo "INFRA_SUPPORT=$INFRA_SUPPORT"
+          echo "OWNER=$OWNER"
+          echo "SSO_GROUP=$SSO_GROUP"
 
       - name: Run create-account.py for new accounts
         if: env.EXISTING_ACCOUNT == 'No'
@@ -75,10 +65,10 @@ jobs:
             "$BUSINESS_UNIT" \
             "$INFRA_SUPPORT" \
             "$OWNER" \
-            "$SLACK_CHANNEL" \
-            "$CNI" \
+            "slack-channel-placeholder" \
+            "false" \
             "$SSO_GROUP" \
-            "$GO_LIVE_DATE"
+            ""
 
       - name: Run amend-accounts.py for existing accounts
         if: env.EXISTING_ACCOUNT == 'Yes'
