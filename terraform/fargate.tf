@@ -4,26 +4,26 @@ provider "aws" {
 
 # Reference existing VPC and subnets
 data "aws_vpc" "main" {
-  id = "vpc-08f57de659bbb5071"  # Replace with the ID of your existing VPC
+  id = "vpc-08f57de659bbb5071" # Replace with the ID of your existing VPC
 }
 
 data "aws_subnet" "subnet_1" {
-  id = "subnet-077c97160c5cf7506"  # Replace with the ID of your existing subnet 1
+  id = "subnet-077c97160c5cf7506" # Replace with the ID of your existing subnet 1
 }
 
 data "aws_subnet" "subnet_2" {
-  id = "subnet-0a1262f87991bede6"  # Replace with the ID of your existing subnet 2
+  id = "subnet-0a1262f87991bede6" # Replace with the ID of your existing subnet 2
 }
 
 data "aws_security_group" "web_sg" {
-  id = "sg-0aea8ae3b9a5be12c"  # Replace with the ID of your existing security group
+  id = "sg-0aea8ae3b9a5be12c" # Replace with the ID of your existing security group
 }
 
 data "aws_ecr_repository" "mk1micros" {
   name = "mk1micros" # Replace with your actual ECR repository name
 }
 
-ALB (Application Load Balancer)
+##ALB (Application Load Balancer)
 resource "aws_lb" "web_alb" {
   name               = "web-alb"
   internal           = false
@@ -64,9 +64,9 @@ resource "aws_lb_listener" "web_listener" {
 
 # Fetch the existing ACM certificate by domain name
 data "aws_acm_certificate" "mk1micros_cert" {
-  domain   = "test.mk1micros.co.uk"  # The domain name for your certificate
-  most_recent = true  # Ensure that we get the most recent certificate if there are multiple
-  statuses = ["ISSUED"]  # Only select certificates that are issued
+  domain      = "test.mk1micros.co.uk" # The domain name for your certificate
+  most_recent = true                   # Ensure that we get the most recent certificate if there are multiple
+  statuses    = ["ISSUED"]             # Only select certificates that are issued
 }
 
 # ALB Listener for HTTPS (Port 443)
@@ -75,8 +75,8 @@ resource "aws_lb_listener" "web_listener_https" {
   port              = 443
   protocol          = "HTTPS"
 
-  ssl_policy        = "ELBSecurityPolicy-2016-08"  # Or another recommended policy
-  certificate_arn   = data.aws_acm_certificate.mk1micros_cert.arn  # ACM SSL certificate ARN
+  ssl_policy      = "ELBSecurityPolicy-2016-08"                 # Or another recommended policy
+  certificate_arn = data.aws_acm_certificate.mk1micros_cert.arn # ACM SSL certificate ARN
 
   default_action {
     type             = "forward"
@@ -97,8 +97,8 @@ resource "aws_iam_role" "ecs_task_execution_role" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
@@ -123,10 +123,10 @@ resource "aws_iam_role" "ecs_task_role" {
   name = "ecs-task-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [ 
+    Statement = [
       {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
@@ -147,7 +147,7 @@ resource "aws_ecs_task_definition" "web_task" {
 
   container_definitions = jsonencode([{
     name      = "mk1micros-container"
-    image     = "${data.aws_ecr_repository.mk1micros.repository_url}:latest"  # Replace with your image or ECR URL
+    image     = "${data.aws_ecr_repository.mk1micros.repository_url}:latest" # Replace with your image or ECR URL
     essential = true
     portMappings = [{
       containerPort = 80
@@ -167,8 +167,8 @@ resource "aws_service_discovery_service" "web_discovery_service" {
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.web_namespace.id
     dns_records {
-      type  = "A"   # Use "A" for IPv4, "AAAA" for IPv6
-      ttl   = 60    # Time to live for DNS records
+      type = "A" # Use "A" for IPv4, "AAAA" for IPv6
+      ttl  = 60  # Time to live for DNS records
     }
   }
   health_check_custom_config {
@@ -200,8 +200,8 @@ resource "aws_ecs_service" "web_service" {
   }
 
   depends_on = [
-    aws_lb_listener.web_listener,  # Ensure ALB listener is ready
-    aws_lb_target_group.web_target_group  # Ensure target group is ready
+    aws_lb_listener.web_listener,        # Ensure ALB listener is ready
+    aws_lb_target_group.web_target_group # Ensure target group is ready
   ]
 }
 
