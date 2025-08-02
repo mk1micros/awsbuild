@@ -1,17 +1,17 @@
 
 # Add AWS Organizations provider to get accounts
-provider "aws" {
-  region = "eu-west-2"
-  alias  = "org"
-}
+# provider "aws" {
+#   region = "eu-west-2"
+#   alias  = "org"
+# }
 
-# Get AWS SSO instance information
-data "aws_ssoadmin_instances" "sso" {}
+# # Get AWS SSO instance information
+# data "aws_ssoadmin_instances" "sso" {}
 
-# Get all accounts from AWS Organizations
-data "aws_organizations_organization" "org" {
-  provider = aws.org
-}
+# # Get all accounts from AWS Organizations
+# data "aws_organizations_organization" "org" {
+#   provider = aws.org
+# }
 
 # Create a new Identity Center group for RootAccess
 # resource "aws_identitystore_group" "root_access_group" {
