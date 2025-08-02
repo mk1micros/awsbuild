@@ -14,20 +14,20 @@ data "aws_organizations_organization" "org" {
 }
 
 # Create a new Identity Center group for RootAccess
-resource "aws_identitystore_group" "root_access_group" {
-  identity_store_id = data.aws_ssoadmin_instances.sso.identity_store_ids[0]
-  display_name      = "RootAccessAdmins" # Name of the new group
-}
+# resource "aws_identitystore_group" "root_access_group" {
+#   identity_store_id = data.aws_ssoadmin_instances.sso.identity_store_ids[0]
+#   display_name      = "RootAccessAdmins" # Name of the new group
+# }
 
 # Fetch group by display name to get correct ID format
-data "aws_identitystore_group" "root_access_group" {
-  identity_store_id = data.aws_ssoadmin_instances.sso.identity_store_ids[0]
+# data "aws_identitystore_group" "root_access_group" {
+#   identity_store_id = data.aws_ssoadmin_instances.sso.identity_store_ids[0]
 
-  filter {
-    attribute_path  = "DisplayName"
-    attribute_value = "RootAccessAdmins"
-  }
-}
+#   filter {
+#     attribute_path  = "DisplayName"
+#     attribute_value = "RootAccessAdmins"
+#   }
+# }
 
 
 # Create the permission set for RootAccess (without inline_policy)

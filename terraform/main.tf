@@ -16,13 +16,13 @@ data "aws_lb" "web_alb" {
   name = "web-alb" # Replace with the name of your existing ALB
 }
 
-module "privatedns" {
-  source   = "./modules/private_dns"
-  dns_zone = "test"
-  vpc_id   = aws_vpc.vpc_master.id
-  vpc_id2  = aws_vpc.vpc_ireland.id
+# module "privatedns" {
+#   source   = "./modules/private_dns"
+#   dns_zone = "test"
+#   vpc_id   = aws_vpc.vpc_master.id
+#   vpc_id2  = aws_vpc.vpc_ireland.id
 
-}
+# }
 
 module "core_dns" {
   source       = "./modules/external_dns"
