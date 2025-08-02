@@ -1,0 +1,94 @@
+----- issue_body.txt -----
+### Is this an existing AWS account?
+
+No
+
+### Environment details
+
+test
+
+### Application Name
+
+test
+
+### Description of application
+
+test
+
+### SSO Group Name
+
+test
+
+### GitHub code owner team slug
+
+git-test
+
+### GitHub actions reviewer team slug
+
+git-test
+
+### Environments
+
+- [x] Development
+- [ ] test
+- [ ] Preproduction
+- [ ] Production
+
+### Environment access level Development
+
+developer
+
+### Environment access level Test
+
+_No response_
+
+### Environment access level Preproduction
+
+_No response_
+
+### Environment access level Production
+
+_No response_
+
+### application
+
+test
+
+### business-unit
+
+LAA
+
+### infrastructure-support
+
+test@testing.com
+
+### owner
+
+Mr test
+
+### Subnet sets
+
+- [x] General
+- [ ] Isolated
+
+### How do users connect to the application
+
+Over the public internet
+
+### Additional features
+
+Please check any additional features required
+- [ ] Additional VPC Endpoints
+- [ ] Extended DNS Zones
+- [ ] Other - please specify
+
+### Other information
+
+_No response_
+
+### Definition of Done
+
+Definition of Done
+- [ ] account created
+- [ ] customer informed
+-------------------------
