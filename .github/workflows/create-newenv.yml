@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -86,7 +88,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add environments/
+          ls -l environments/
           git commit -m "Automated environment request for $APP_NAME"
+          git status
           git push --set-upstream origin env-request/${{ github.run_id }}
 
       - name: Create Pull Request
