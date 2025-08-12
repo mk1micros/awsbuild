@@ -64,6 +64,7 @@ resource "aws_lb_listener" "web_listener" {
 
 # Fetch the existing ACM certificate by domain name
 data "aws_acm_certificate" "mk1micros_cert" {
+  depends_on = [ aws_acm_certificate.mk1micros-lb-https ]
   domain      = "test.mk1micros.co.uk" # The domain name for your certificate
   most_recent = true                   # Ensure that we get the most recent certificate if there are multiple
   statuses    = ["ISSUED"]             # Only select certificates that are issued
@@ -71,6 +72,7 @@ data "aws_acm_certificate" "mk1micros_cert" {
 
 # ALB Listener for HTTPS (Port 443)
 resource "aws_lb_listener" "web_listener_https" {
+  depends_on = [ aws_acm_certificate.mk1micros-lb-https ]
   load_balancer_arn = aws_lb.web_alb.arn
   port              = 443
   protocol          = "HTTPS"
@@ -163,16 +165,14 @@ resource "aws_service_discovery_private_dns_namespace" "web_namespace" {
 }
 
 resource "aws_service_discovery_service" "web_discovery_service" {
-  name = "roduction-service" # Service name registered in the namespace
+  name = "Production-service" # Service name registered in the namespace
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.web_namespace.id
+    routing_policy = "MULTIVALUE"
     dns_records {
       type = "A" # Use "A" for IPv4, "AAAA" for IPv6
       ttl  = 60  # Time to live for DNS records
     }
-  }
-  health_check_custom_config {
-    failure_threshold = 1
   }
 }
 
