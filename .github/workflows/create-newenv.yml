@@ -85,9 +85,10 @@ jobs:
 
       - name: Commit changes
         run: |
-          git rm issue_body.txt
-          git add environments/*
+          git checkout -b env-request/${{ github.run_id }}
           ls -l environments/
+          git rm -f issue_body.txt
+          git add -f environments/*
           git commit -m "Automated environment request for $APP_NAME"
           git status
           git push --set-upstream origin env-request/${{ github.run_id }}
