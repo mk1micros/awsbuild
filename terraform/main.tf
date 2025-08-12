@@ -13,6 +13,7 @@ resource "aws_lb" "application-lb" {
 
 
 data "aws_lb" "web_alb" {
+  depends_on = [ aws_acm_certificate.mk1micros-lb-https ]
   name = "web-alb" # Replace with the name of your existing ALB
 }
 
