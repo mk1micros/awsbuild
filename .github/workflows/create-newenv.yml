@@ -85,7 +85,7 @@ jobs:
 
       - name: Commit changes
         run: |
-          git checkout -b env-request/${{ github.run_id }}
+          git checkout env-request/${{ github.run_id }}
           ls -l environments/
           git rm -f issue_body.txt
           git add -f environments/*
