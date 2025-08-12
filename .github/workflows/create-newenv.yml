@@ -81,13 +81,10 @@ jobs:
             # Add other arguments as needed for your amend script
 
       - name: Show created JSON
-        run: cat environments/test.json
+        run: cat environments/"$APP_NAME".json
 
       - name: Commit changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          rm issue_body.txt
           git rm issue_body.txt
           git add environments/*
           ls -l environments/
