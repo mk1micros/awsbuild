@@ -1,31 +1,30 @@
------ issue_body.txt -----
 ### Is this an existing AWS account?
 
 No
 
 ### Environment details
 
-test
+Development environment
 
 ### Application Name
 
-test
+data-dev
 
 ### Description of application
 
-test
+data development
 
 ### SSO Group Name
 
-test
+dev
 
 ### GitHub code owner team slug
 
-git-test
+git-dev
 
 ### GitHub actions reviewer team slug
 
-git-test
+git-dev
 
 ### Environments
 
@@ -52,7 +51,7 @@ _No response_
 
 ### application
 
-test
+data-dev
 
 ### business-unit
 
@@ -60,11 +59,11 @@ LAA
 
 ### infrastructure-support
 
-test@testing.com
+dev@dev.com
 
 ### owner
 
-Mr test
+MR Dev
 
 ### Subnet sets
 
@@ -91,4 +90,3 @@ _No response_
 Definition of Done
 - [ ] account created
 - [ ] customer informed
--------------------------
