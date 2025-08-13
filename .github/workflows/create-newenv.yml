@@ -90,14 +90,12 @@ jobs:
 
       - name: Commit changes
         env:
-          GH_TOKEN: ${{ secrets.TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git checkout env-request/${{ github.run_id }}
           ls -l environments/
           git rm -f issue_body.txt
           git add -f environments/*
           git commit -m "Automated environment request for $APP_NAME"
-          git status
           git push --set-upstream origin env-request/${{ github.run_id }}
           gh pr create --base main --head env-request/${{ github.run_id }} \
             --title "Automated environment request for $APP_NAME" \
