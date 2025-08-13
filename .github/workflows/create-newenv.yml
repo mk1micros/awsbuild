@@ -83,7 +83,14 @@ jobs:
       - name: Show created JSON
         run: cat environments/"$APP_NAME".json
 
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install gh
+
       - name: Commit changes
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN }}
         run: |
           git checkout env-request/${{ github.run_id }}
           ls -l environments/
@@ -92,11 +99,6 @@ jobs:
           git commit -m "Automated environment request for $APP_NAME"
           git status
           git push --set-upstream origin env-request/${{ github.run_id }}
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: env-request/${{ github.run_id }}
-          title: "Automated environment request for ${{ env.APP_NAME }}"
-          body: "This PR was created automatically from an environment request issue."
-          base: main
+          gh pr create --base main --head env-request/${{ github.run_id }} \
+            --title "Automated environment request for $APP_NAME" \
+            --body "This PR was created automatically from an environment request issue."
