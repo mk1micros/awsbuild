@@ -83,6 +83,11 @@ jobs:
       - name: Show created JSON
         run: cat environments/"$APP_NAME".json
 
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install gh
+
       - name: Commit changes
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
