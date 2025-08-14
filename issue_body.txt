@@ -5,19 +5,19 @@ No
 
 ### Environment details
 
-test
+tested
 
 ### Application Name
 
-test
+tested
 
 ### Description of application
 
-test
+tested
 
 ### SSO Group Name
 
-test
+tested
 
 ### GitHub code owner team slug
 
@@ -30,7 +30,7 @@ git-test
 ### Environments
 
 - [x] Development
-- [ ] test
+- [x] test
 - [ ] Preproduction
 - [ ] Production
 
@@ -40,7 +40,7 @@ developer
 
 ### Environment access level Test
 
-_No response_
+developer
 
 ### Environment access level Preproduction
 
