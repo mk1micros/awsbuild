@@ -127,6 +127,7 @@ jobs:
           ls -l environments/
           git rm -f issue_body.txt
           git add -f environments/*
+          git add -f policies/environments/expected.rego
           git commit -m "Automated environment request for $APP_NAME"
           git push --set-upstream origin env-request/${{ github.run_id }}
           gh pr create --base main --head env-request/${{ github.run_id }} \
