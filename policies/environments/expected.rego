@@ -6,6 +6,7 @@ expected :=
 {
   "accounts": [
     
+    
     "analytical-platform",
     "analytical-platform-common",
     "analytical-platform-compute",
@@ -82,6 +83,7 @@ expected :=
     "pra-register",
     "property-cafm-data-migration",
     "refer-monitor",
+    "sale1",
     "sprinkler",
     "testing",
     "tipstaff",
@@ -91,6 +93,7 @@ expected :=
     "xhibit-portal",
     "youth-justice-app-framework",
     "youth-justice-networking"
+
 
 
     ]

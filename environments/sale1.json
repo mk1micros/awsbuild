@@ -1,0 +1,24 @@
+{
+  "account-type": "member",
+  "environments": [
+    {
+      "name": "development",
+      "access": [
+        {
+          "sso_group_name": "sso-sales",
+          "level": "sandbox"
+        }
+      ]
+    }
+  ],
+  "tags": {
+    "application": "sale1",
+    "business-unit": "sales",
+    "infrastructure-support": "sales",
+    "owner": "sales@slaes.com",
+    "slack-channel": "slack-channel-placeholder",
+    "critical-national-infrastructure": false
+  },
+  "github-oidc-team-repositories": [],
+  "go-live-date": ""
+}
