@@ -47,30 +47,51 @@ jobs:
       - name: Extract environment selections
         run: |
           ENVIRONMENTS=""
+
           # Development
           DEV_SELECTED=$(awk '/- \[x\] Development/ {print "true"}' issue_body.txt)
-          DEV_ACCESS=$(awk -v key="### Environment access level Development" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+          DEV_ACCESS=$(awk -v key="### Environment access level Development" '
+            $0==key {found=1; next}
+            found && /^### / {exit}
+            found && NF && $0!="_No response_" {print $0}
+          ' issue_body.txt | paste -sd, -)
           if [ "$DEV_SELECTED" = "true" ]; then
             ENVIRONMENTS="${ENVIRONMENTS}{\"name\": \"development\", \"access_level\": \"$DEV_ACCESS\"},"
           fi
+
           # Test
           TEST_SELECTED=$(awk '/- \[x\] test/ {print "true"}' issue_body.txt)
-          TEST_ACCESS=$(awk -v key="### Environment access level Test" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+          TEST_ACCESS=$(awk -v key="### Environment access level Test" '
+            $0==key {found=1; next}
+            found && /^### / {exit}
+            found && NF && $0!="_No response_" {print $0}
+          ' issue_body.txt | paste -sd, -)
           if [ "$TEST_SELECTED" = "true" ]; then
             ENVIRONMENTS="${ENVIRONMENTS}{\"name\": \"test\", \"access_level\": \"$TEST_ACCESS\"},"
           fi
+
           # Preproduction
           PREPROD_SELECTED=$(awk '/- \[x\] Preproduction/ {print "true"}' issue_body.txt)
-          PREPROD_ACCESS=$(awk -v key="### Environment access level Preproduction" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+          PREPROD_ACCESS=$(awk -v key="### Environment access level Preproduction" '
+            $0==key {found=1; next}
+            found && /^### / {exit}
+            found && NF && $0!="_No response_" {print $0}
+          ' issue_body.txt | paste -sd, -)
           if [ "$PREPROD_SELECTED" = "true" ]; then
             ENVIRONMENTS="${ENVIRONMENTS}{\"name\": \"preproduction\", \"access_level\": \"$PREPROD_ACCESS\"},"
           fi
+
           # Production
           PROD_SELECTED=$(awk '/- \[x\] Production/ {print "true"}' issue_body.txt)
-          PROD_ACCESS=$(awk -v key="### Environment access level Production" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
+          PROD_ACCESS=$(awk -v key="### Environment access level Production" '
+            $0==key {found=1; next}
+            found && /^### / {exit}
+            found && NF && $0!="_No response_" {print $0}
+          ' issue_body.txt | paste -sd, -)
           if [ "$PROD_SELECTED" = "true" ]; then
             ENVIRONMENTS="${ENVIRONMENTS}{\"name\": \"production\", \"access_level\": \"$PROD_ACCESS\"},"
           fi
+
           # Remove trailing comma and wrap in brackets
           ENV_SELECTIONS_JSON="[$(echo $ENVIRONMENTS | sed 's/,$//')]"
           echo "ENV_SELECTIONS_JSON=$ENV_SELECTIONS_JSON" >> $GITHUB_ENV
@@ -111,6 +132,8 @@ jobs:
         run: |
           python scripts/amend-accounts.py \
             "$APP_NAME" \
+            "SSO_GROUP" \
+            "$ENV_SELECTIONS_JSON"
             # Add other arguments as needed for your amend script
 
       - name: Show created JSON

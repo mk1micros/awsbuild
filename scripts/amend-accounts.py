@@ -4,7 +4,7 @@ import sys
 
 ENV_DIR = "environments"
 
-def append_access(app_name, env_selections):
+def append_access(app_name, sso_group, env_selections):
     filename = os.path.join(ENV_DIR, f"{app_name}.json")
     if not os.path.exists(filename):
         print(f"Error: {filename} does not exist.")
@@ -18,10 +18,15 @@ def append_access(app_name, env_selections):
 
     for env_sel in env_selections:
         env_name = env_sel["name"]
-        new_access = [{
-            "sso_group_name": env_sel.get("sso_group_name", ""),
-            "level": env_sel.get("access_level", "")
-        }]
+        # Split access levels by comma and strip whitespace
+        access_levels = [level.strip() for level in env_sel.get("access_level", "").split(",") if level.strip()]
+        new_access = [
+            {
+                "sso_group_name": sso_group,
+                "level": level
+            }
+            for level in access_levels if level
+        ]
         env_found = False
         for env in environments:
             if env["name"] == env_name:
@@ -47,11 +52,12 @@ def append_access(app_name, env_selections):
     print(f"Updated access for environments in {filename}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python amend-accounts.py <app_name> <env_selections_json>")
+    if len(sys.argv) < 4:
+        print("Usage: python amend-accounts.py <app_name> <sso_group> <env_selections_json>")
         sys.exit(1)
     app_name = sys.argv[1]
-    env_selections_json = sys.argv[2]
+    sso_group = sys.argv[2]
+    env_selections_json = sys.argv[3]
     env_selections = json.loads(env_selections_json)
-    append_access(app_name, env_selections)
+    append_access(app_name, sso_group, env_selections)
     print(f"Amended {app_name}.json")
