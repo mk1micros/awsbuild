@@ -157,7 +157,9 @@ jobs:
           git push --set-upstream origin env-request/${{ github.run_id }}
           gh pr create --base main --head env-request/${{ github.run_id }} \
             --title "Automated environment request for $APP_NAME" \
-            --body "This PR was created automatically from an environment request issue."
+            --body "This PR was created automatically from an environment request issue.
+            Linked to #${ISSUE_NUMBER}
+            "
 
       - name: Commit changes for existing accounts
         if: env.EXISTING_ACCOUNT == 'Yes'
@@ -170,7 +172,9 @@ jobs:
           git push --set-upstream origin env-request/${{ github.run_id }}
           gh pr create --base main --head env-request/${{ github.run_id }} \
             --title "Automated environment request for $APP_NAME" \
-            --body "This PR was created automatically from an environment request issue."
+            --body "This PR was created automatically from an environment request issue.
+           Linked to #${ISSUE_NUMBER} 
+            "
 
       - name: Comment on issue with PR link
         env:
