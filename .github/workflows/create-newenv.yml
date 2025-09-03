@@ -132,7 +132,7 @@ jobs:
         run: |
           python scripts/amend-accounts.py \
             "$APP_NAME" \
-            "SSO_GROUP" \
+            "$SSO_GROUP" \
             "$ENV_SELECTIONS_JSON"
             # Add other arguments as needed for your amend script
 
@@ -144,7 +144,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install gh
 
-      - name: Commit changes
+      - name: Commit changes for new accounts
+        if: env.EXISTING_ACCOUNT == 'No'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -152,6 +153,20 @@ jobs:
           git rm -f issue_body.txt
           git add -f environments/*
           git add -f policies/environments/expected.rego
+          git commit -m "Automated environment request for $APP_NAME"
+          git push --set-upstream origin env-request/${{ github.run_id }}
+          gh pr create --base main --head env-request/${{ github.run_id }} \
+            --title "Automated environment request for $APP_NAME" \
+            --body "This PR was created automatically from an environment request issue."
+
+      - name: Commit changes for existing accounts
+        if: env.EXISTING_ACCOUNT == 'Yes'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ls -l environments/
+          git rm -f issue_body.txt
+          git add -f environments/*
           git commit -m "Automated environment request for $APP_NAME"
           git push --set-upstream origin env-request/${{ github.run_id }}
           gh pr create --base main --head env-request/${{ github.run_id }} \
