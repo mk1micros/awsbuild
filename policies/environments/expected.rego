@@ -84,6 +84,7 @@ expected :=
     "pra-register",
     "property-cafm-data-migration",
     "refer-monitor",
+    "salesdb",
     "sprinkler",
     "testing",
     "tipstaff",
