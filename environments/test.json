@@ -7,6 +7,28 @@
         {
           "sso_group_name": "test",
           "level": "developer"
+        },
+        {
+          "sso_group_name": "test",
+          "level": "sandbox"
+        }
+      ]
+    },
+    {
+      "name": "test",
+      "access": [
+        {
+          "sso_group_name": "test",
+          "level": "developer"
+        }
+      ]
+    },
+    {
+      "name": "production",
+      "access": [
+        {
+          "sso_group_name": "test",
+          "level": "view-only"
         }
       ]
     }
