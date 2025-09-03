@@ -1,6 +1,7 @@
 name: New Modernisation Platform Environment
 description: Request a new Modernisation Platform Environment
 labels: ["onboarding", "member request", "New Account"]
+projects: ["mk1micros/1"]
 body:
   - type: markdown
     attributes:

@@ -2,6 +2,7 @@ name: Mk1micro Story
 description: 📖 Create new mk1micros DevOps story
 title: "[gitmoji] <title>"
 labels: ["needs refining"]
+projects: ["mk1micros/1"]
 body:
   - type: markdown
     attributes:
