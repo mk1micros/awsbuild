@@ -7,6 +7,7 @@ expected :=
   "accounts": [
     
     
+    
     "analytical-platform",
     "analytical-platform-common",
     "analytical-platform-compute",
@@ -77,6 +78,7 @@ expected :=
     "operations-engineering",
     "opg-lpa-data-store",
     "panda-cyber-appsec-lab",
+    "patchday",
     "performance-hub",
     "planetfm",
     "portal",
@@ -93,6 +95,7 @@ expected :=
     "xhibit-portal",
     "youth-justice-app-framework",
     "youth-justice-networking"
+
 
 
 
