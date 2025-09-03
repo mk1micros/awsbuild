@@ -1,0 +1,37 @@
+{
+  "account-type": "member",
+  "environments": [
+    {
+      "name": "development",
+      "access": [
+        {
+          "sso_group_name": "mk1web",
+          "level": "developer"
+        },
+        {
+          "sso_group_name": "mk1web",
+          "level": "sandbox"
+        }
+      ]
+    },
+    {
+      "name": "preproduction",
+      "access": [
+        {
+          "sso_group_name": "mk1web",
+          "level": "view-only"
+        }
+      ]
+    }
+  ],
+  "tags": {
+    "application": "mk1web",
+    "business-unit": "LAA",
+    "infrastructure-support": "support@mk1micros.co.uk",
+    "owner": "Mr web",
+    "slack-channel": "slack-channel-placeholder",
+    "critical-national-infrastructure": false
+  },
+  "github-oidc-team-repositories": [],
+  "go-live-date": ""
+}
