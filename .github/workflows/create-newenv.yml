@@ -21,6 +21,7 @@ jobs:
       - name: Save issue body to file
         run: |
           echo "${{ github.event.issue.body }}" > issue_body.txt
+          echo "ISSUE_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
 
       - name: Debug print issue_body.txt
         run: |
@@ -176,5 +177,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_URL=$(gh pr view env-request/${{ github.run_id }} --json url -q .url)
-          ISSUE_NUMBER=${{ github.event.issue.number }}
-          gh issue comment $ISSUE_NUMBER --body "A pull request has been created for your environment request: $PR_URL"
+          REPO="${{ github.repository }}"
+          gh issue comment $ISSUE_NUMBER --repo "$REPO" --body "A pull request has been created for your environment request: $PR_URL"
