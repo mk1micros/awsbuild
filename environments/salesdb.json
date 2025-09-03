@@ -1,0 +1,37 @@
+{
+  "account-type": "member",
+  "environments": [
+    {
+      "name": "development",
+      "access": [
+        {
+          "sso_group_name": "sales",
+          "level": "sandbox"
+        }
+      ]
+    },
+    {
+      "name": "production",
+      "access": [
+        {
+          "sso_group_name": "sales",
+          "level": "view-only"
+        },
+        {
+          "sso_group_name": "sales",
+          "level": "developer"
+        }
+      ]
+    }
+  ],
+  "tags": {
+    "application": "salesdb",
+    "business-unit": "LAA",
+    "infrastructure-support": "salessupport@mk1micros.co.uk",
+    "owner": "MR sales",
+    "slack-channel": "slack-channel-placeholder",
+    "critical-national-infrastructure": false
+  },
+  "github-oidc-team-repositories": [],
+  "go-live-date": ""
+}
