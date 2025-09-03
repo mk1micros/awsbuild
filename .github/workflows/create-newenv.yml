@@ -170,3 +170,11 @@ jobs:
           gh pr create --base main --head env-request/${{ github.run_id }} \
             --title "Automated environment request for $APP_NAME" \
             --body "This PR was created automatically from an environment request issue."
+
+      - name: Comment on issue with PR link
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_URL=$(gh pr view env-request/${{ github.run_id }} --json url -q .url)
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          gh issue comment $ISSUE_NUMBER --body "A pull request has been created for your environment request: $PR_URL"
