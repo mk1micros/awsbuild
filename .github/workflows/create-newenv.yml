@@ -23,12 +23,6 @@ jobs:
           echo "${{ github.event.issue.body }}" > issue_body.txt
           echo "ISSUE_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
 
-      - name: Debug print issue_body.txt
-        run: |
-          echo "----- issue_body.txt -----"
-          cat issue_body.txt
-          echo "-------------------------"
-
       - name: Extract fields from issue
         run: |
           EXISTING_ACCOUNT=$(awk -v key="### Is this an existing AWS account?" '$0==key {while(getline>0){if($0~/^$/)continue;if($0~/^_No response_$/){print "";exit}print $0;exit}}' issue_body.txt | xargs)
@@ -96,16 +90,6 @@ jobs:
           # Remove trailing comma and wrap in brackets
           ENV_SELECTIONS_JSON="[$(echo $ENVIRONMENTS | sed 's/,$//')]"
           echo "ENV_SELECTIONS_JSON=$ENV_SELECTIONS_JSON" >> $GITHUB_ENV
-
-      - name: Debug extracted variables
-        run: |
-          echo "EXISTING_ACCOUNT=$EXISTING_ACCOUNT"
-          echo "APP_NAME=$APP_NAME"
-          echo "APPLICATION=$APPLICATION"
-          echo "BUSINESS_UNIT=$BUSINESS_UNIT"
-          echo "INFRA_SUPPORT=$INFRA_SUPPORT"
-          echo "OWNER=$OWNER"
-          echo "SSO_GROUP=$SSO_GROUP"
 
       - name: Create and checkout branch for environment request
         run: |
