@@ -1,4 +1,4 @@
-name: AMI Cleanup
+name: Cloud Cleanup (AMI & EBS)
 
 on:
   workflow_dispatch:
@@ -11,30 +11,29 @@ on:
         description: 'Comma-separated list of environments (e.g. development,production)'
         required: true
         type: string
+      cleanup_type:
+        description: 'Which cleanup to run (ami, ebs, both)'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - ami
+          - ebs
+          - both
       ami_cleanup_sh_args:
-        description: 'Arguments passed to ami_cleanup.sh (e.g. -c -m 3)'
+        description: 'Arguments passed to ami_cleanup.sh'
         required: false
         default: "-c -m 3"
         type: string
+      ebs_age_in_months:
+        description: 'Delete unattached EBS volumes older than this many months'
+        required: false
+        default: "1"
+        type: string
       dryrun:
-        description: 'Dry run mode for AMI cleanup'
+        description: 'Dry run mode'
         required: true
         default: true
-        type: boolean
-
-  workflow_call:
-    inputs:
-      application:
-        required: true
-        type: string
-      environments:
-        required: true
-        type: string
-      ami_cleanup_sh_args:
-        required: false
-        type: string
-      dryrun:
-        required: false
         type: boolean
 
 permissions:
@@ -48,12 +47,11 @@ jobs:
     outputs:
       matrix: ${{ steps.strategy.outputs.matrix }}
     steps:
-      - name: Build strategy matrix from application + environments
+      - name: Build strategy matrix
         id: strategy
         run: |
-          app="${{ github.event.inputs.application || inputs.application }}"
-          envs_str="${{ github.event.inputs.environments || inputs.environments }}"
-
+          app="${{ github.event.inputs.application }}"
+          envs_str="${{ github.event.inputs.environments }}"
           IFS=', ' read -r -a envs <<< "$envs_str"
 
           echo "Application: $app"
@@ -62,7 +60,6 @@ jobs:
           echo '{"include":[' > matrix.json
           for env in "${envs[@]}"; do
             acc="${app}-${env}"
-            echo "Adding account: $acc"
             echo "{\"account_name\":\"$acc\"}," >> matrix.json
           done
           sed -i '$ s/,$//' matrix.json
@@ -73,10 +70,11 @@ jobs:
           echo "${matrix}" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
 
-  check-amis:
-    name: Identify Unused AMIs
+  ami-cleanup:
+    name: AMI Cleanup
     runs-on: ubuntu-latest
     needs: build-matrix
+    if: ${{ github.event.inputs.cleanup_type == 'ami' || github.event.inputs.cleanup_type == 'both' }}
     strategy:
       matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
       max-parallel: 1
@@ -84,46 +82,43 @@ jobs:
       - name: Get Account Details
         id: account
         run: |
-          echo "Account: ${{ matrix.account_name }}"
           account_id="${{ fromJSON(secrets.MODERNISATION_PLATFORM_ENVIRONMENT_MANAGEMENT).account_ids[matrix.account_name] }}"
           role_arn="arn:aws:iam::${account_id}:role/modernisation-platform-oidc-cicd"
           echo "role_arn=${role_arn}" >> $GITHUB_OUTPUT
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           role-to-assume: "${{ steps.account.outputs.role_arn }}"
-          role-session-name: "github-${{ github.repository_id }}-${{ github.run_id }}-${{ matrix.account_name }}"
+          role-session-name: "ami-cleanup-${{ matrix.account_name }}"
           aws-region: eu-west-2
 
-      - name: Checkout Repository
+      - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Run AMI Cleanup Script (collect commands)
-        id: ami-check
+      - name: Run AMI Cleanup (Collect)
         run: |
-          app="${{ github.event.inputs.application || inputs.application }}"
-          args="${{ github.event.inputs.ami_cleanup_sh_args || inputs.ami_cleanup_sh_args }}"
-          echo "Running AMI cleanup for ${{ matrix.account_name }} with args: $args"
-          src/ami_cleanup.sh -a "$app" -s aws_cli_commands.sh $args delete
-          if [[ -s aws_cli_commands.sh ]]; then
-            echo "cleanup=1" >> $GITHUB_OUTPUT
+          app="${{ github.event.inputs.application }}"
+          args="${{ github.event.inputs.ami_cleanup_sh_args }}"
+          scripts/ami_cleanup.sh -a "$app" -s ami_commands.sh $args delete
+
+      - name: Execute AMI Deregistration (if not dryrun)
+        if: ${{ github.event.inputs.dryrun == 'false' }}
+        run: |
+          if [[ -f ami_commands.sh ]]; then
+            grep 'aws ec2 deregister-image' ami_commands.sh | while read -r cmd; do
+              echo "Executing: $cmd"
+              eval "$cmd"
+            done
           else
-            echo "cleanup=0" >> $GITHUB_OUTPUT
+            echo "No AMI commands to execute."
+          fi
 
-      - name: Upload AMI Commands Artifact
-        if: ${{ steps.ami-check.outputs.cleanup == 1 }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "aws_cli_commands.sh"
-          path: aws_cli_commands.sh
-          overwrite: true
-
-  cleanup-amis:
-    name: Cleanup AMIs
+  ebs-cleanup:
+    name: EBS Cleanup
     runs-on: ubuntu-latest
-    needs: [build-matrix, check-amis]
-    if: ${{ github.event.inputs.dryrun == 'false' || inputs.dryrun == false }}
+    needs: build-matrix
+    if: ${{ github.event.inputs.cleanup_type == 'ebs' || github.event.inputs.cleanup_type == 'both' }}
     strategy:
       matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
       max-parallel: 1
@@ -131,31 +126,25 @@ jobs:
       - name: Get Account Details
         id: account
         run: |
-          echo "Account: ${{ matrix.account_name }}"
           account_id="${{ fromJSON(secrets.MODERNISATION_PLATFORM_ENVIRONMENT_MANAGEMENT).account_ids[matrix.account_name] }}"
           role_arn="arn:aws:iam::${account_id}:role/modernisation-platform-oidc-cicd"
           echo "role_arn=${role_arn}" >> $GITHUB_OUTPUT
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           role-to-assume: "${{ steps.account.outputs.role_arn }}"
-          role-session-name: "github-${{ github.repository_id }}-${{ github.run_id }}-${{ matrix.account_name }}"
+          role-session-name: "ebs-cleanup-${{ matrix.account_name }}"
           aws-region: eu-west-2
 
-      - name: Download AMI Commands Artifact
-        uses: actions/download-artifact@v5
-        with:
-          name: "aws_cli_commands.sh"
+      - name: Checkout Repo
+        uses: actions/checkout@v4
 
-      - name: Execute AMI Deregistration Commands
+      - name: Run EBS Cleanup
         run: |
-          IFS=$'\n'
-          cmds=($(sed -n '/aws ec2 deregister-image/p' aws_cli_commands.sh))
-          unset IFS
-          n=${#cmds[@]}
-          echo "Executing $n AMI deregistration commands for ${{ matrix.account_name }}"
-          for ((i=0;i<n;i++)); do
-            echo "[$((i+1))/$n]: ${cmds[$i]}"
-            ${cmds[$i]}
-          done
+          months="${{ github.event.inputs.ebs_age_in_months }}"
+          if [[ ${{ github.event.inputs.dryrun }} == 'true' ]]; then
+            scripts/ebs_cleanup.sh -m "$months" unattached
+          else
+            scripts/ebs_cleanup.sh -m "$months" delete
+          fi
