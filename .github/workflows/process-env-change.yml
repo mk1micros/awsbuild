@@ -223,6 +223,16 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Debug parsed outputs
+        shell: bash
+        run: |
+          echo "account_name=${{ steps.form.outputs.account_name }}"
+          echo "environment_change_action=${{ steps.form.outputs.environment_change_action }}"
+          echo "environment_name=${{ steps.form.outputs.environment_name }}"
+          echo "reviewers_change_action=${{ steps.form.outputs.reviewers_change_action }}"
+          echo "tags_change_action=${{ steps.form.outputs.tags_change_action }}"
+          echo "other_change_action=${{ steps.form.outputs.other_change_action }}"
+
       - name: Verify target JSON exists
         shell: bash
         run: |
@@ -302,6 +312,19 @@ jobs:
 
           python3 scripts/process_env_changes.py "${args[@]}"
 
+      - name: Validate environment JSON structure
+        shell: bash
+        run: |
+          safe_account="$(echo "${{ steps.form.outputs.account_name }}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9_-]//g')"
+          python3 scripts/validate_env_json.py "environments/${safe_account}.json"
+
+      - name: Prepare PR variables
+        id: vars
+        shell: bash
+        run: |
+          safe_account="$(echo "${{ steps.form.outputs.account_name }}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9_-]//g')"
+          echo "safe_account=${safe_account}" >> "$GITHUB_OUTPUT"
+
       - name: Open PR
         uses: peter-evans/create-pull-request@v6
         with:
@@ -316,5 +339,5 @@ jobs:
           branch: "env-json/${{ github.event.issue.number }}"
           commit-message: "Structured env JSON change from issue #${{ github.event.issue.number }}"
           add-paths: |
-            environments/${{ steps.form.outputs.account_name }}.json
+            environments/${{ steps.vars.outputs.safe_account }}.json
           labels: account_amendment
