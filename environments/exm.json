@@ -13,6 +13,15 @@
           "level": "data-engineer"
         }
       ]
+    },
+    {
+      "name": "test",
+      "access": [
+        {
+          "sso_group_name": "modernisation-platform",
+          "level": "developer"
+        }
+      ]
     }
   ],
   "tags": {
