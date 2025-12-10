@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neon Dodger</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Neon Dodger</h1>
+      <div class="controls">
+        <button id="btnStart">Start</button>
+        <button id="btnPause">Pause</button>
+      </div>
+    </header>
+
+    <main class="game-wrapper">
+      <div class="canvas-wrap">
+        <div id="overlay" class="overlay hidden">
+          <div class="panel">
+            <h2 id="overlayTitle">Neon Dodger</h2>
+            <p id="overlayText">Use arrow keys or WASD to move. Avoid red blocks. Loot chests for health & weapon buffs. Press Start to play.</p>
+            <div class="small">Tip: Hold Shift for a quick dash.</div>
+          </div>
+        </div>
+        <!-- In-game HUD overlay -->
+        <div class="hud hud-floating">
+          <div>Score: <span id="score">0</span></div>
+          <div class="lives-row">
+            <span>Lives:</span>
+            <span id="lives">3</span>
+            <svg id="healthPie" width="40" height="40" viewBox="0 0 40 40" class="health-pie" aria-label="Health">
+              <circle cx="20" cy="20" r="18" class="pie-bg" />
+              <circle cx="20" cy="20" r="18" class="pie-fill" />
+            </svg>
+          </div>
+          <div>Level: <span id="level">1</span></div>
+          <div>Version: <span id="version">0.0.0</span></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>© 2025 Neon Dodger</span>
+      <a href="#" id="toggleHelp">Help</a>
+    </footer>
+
+    <!-- Import map for Three.js to support example module bare specifiers -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+      }
+    }
+    </script>
+    <!-- Game code (ES module) -->
+    <script type="module" src="main.js"></script>
+  </body>
+  </html>
