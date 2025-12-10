@@ -151,7 +151,8 @@ jobs:
               try {
                 const res = await github.rest.repos.getContent({ owner, repo, path: 'environments' });
                 const entries = Array.isArray(res.data) ? res.data : [];
-                const names = new Set(entries.filter(e => e.type === 'file' && e.name.endsWith('.json')).map(e => e.name.replace(/\.json$/, '')));
+                const names = entries.filter(e => e.type === 'file' && e.name.endsWith('.json')).map(e => e.name.replace(/\.json$/, ''));
+                const nameSet = new Set(names.map(n => n.toLowerCase()));
                 // scan title and body for tokens that match file names
                 const scanText = `${title}\n${body}`.toLowerCase();
                 for (const name of names) {
@@ -163,10 +164,19 @@ jobs:
             }
               // If still empty, try values from parsed fields
               if (!account) {
+              try {
+                const { owner, repo } = context.repo;
+                const res = await github.rest.repos.getContent({ owner, repo, path: 'environments' });
+                const entries = Array.isArray(res.data) ? res.data : [];
+                const names = entries.filter(e => e.type === 'file' && e.name.endsWith('.json')).map(e => e.name.replace(/\.json$/, ''));
+                const nameSet = new Set(names.map(n => n.toLowerCase()));
                 for (const [k,v] of Object.entries(fields)) {
                   const val = (v || '').toLowerCase().replace(/[^a-z0-9_-]/g, '');
                   if (nameSet.has(val)) { account = v; break; }
                 }
+              } catch (err) {
+                // ignore API errors
+              }
               }
               // Final fallback: prefer common raw keys
               if (!account) {
@@ -214,9 +224,12 @@ jobs:
         run: |
           safe_account="$(echo "${{ steps.form.outputs.account_name }}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9_-]//g')"
           target="environments/${safe_account}.json"
+          echo "Resolved safe_account=${safe_account}"
           echo "Checking for ${target}"
           if [ ! -f "$target" ]; then
             echo "ERROR: Target JSON not found: $target" >&2
+            echo "Available files in environments/:" >&2
+            ls -1 environments | sed 's/^/  /' >&2 || true
             exit 1
           fi
 
