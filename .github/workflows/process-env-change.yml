@@ -302,17 +302,6 @@ jobs:
 
           python3 scripts/process_env_changes.py "${args[@]}"
 
-      - name: Commit changes
-        run: |
-          branch="env-json/${{ github.event.issue.number }}"
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git checkout -b "$branch"
-          safe_account="$(echo "${{ steps.form.outputs.account_name }}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9_-]//g')"
-          git add "environments/${safe_account}.json"
-          git commit -m "Structured env JSON change from issue #${{ github.event.issue.number }}"
-          git push -u origin "$branch"
-
       - name: Open PR
         uses: peter-evans/create-pull-request@v6
         with:
@@ -325,4 +314,7 @@ jobs:
             Tags action: ${{ steps.form.outputs.tags_change_action }}
             Other action: ${{ steps.form.outputs.other_change_action }}
           branch: "env-json/${{ github.event.issue.number }}"
+          commit-message: "Structured env JSON change from issue #${{ github.event.issue.number }}"
+          add-paths: |
+            environments/${{ steps.form.outputs.account_name }}.json
           labels: account_amendment
