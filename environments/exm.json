@@ -14,7 +14,7 @@
         },
         {
           "sso_group_name": "dev-team",
-          "level": "sandbox"
+          "level": "developer"
         }
       ]
     },
