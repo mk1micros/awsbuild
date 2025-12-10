@@ -78,7 +78,11 @@ jobs:
               const headingMatch = labelLine.match(/^#{2,}\s*(.+?)\s*$/);
               if (headingMatch) {
                 const headingText = headingMatch[1];
-                const idKey = idMap.get(toKey(headingText));
+                let idKey = idMap.get(toKey(headingText));
+                // Fallback: treat heading text as a known label via labelMap
+                if (!idKey && labelMap.has(headingText)) {
+                  idKey = labelMap.get(headingText);
+                }
                 if (idKey) {
                   // find next non-empty, non-heading line
                   let j = i + 1, value = "";
@@ -180,7 +184,7 @@ jobs:
               }
               // Final fallback: prefer common raw keys
               if (!account) {
-                account = get('app_name') || get('account-name') || get('account_name');
+                account = get('app_name') || get('account-name') || get('account_name') || fields['app_name_matches_json_filename_in_environments'] || fields['app_name_matches_json_filename_in_environments_'];
               }
             core.setOutput('account_name', account);
             const preview = body.slice(0, 400).replace(/\n/g, '\\n');
