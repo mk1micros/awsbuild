@@ -238,28 +238,42 @@ jobs:
           fi
 
       - name: Apply structured changes
+        shell: bash
         run: |
-          python3 scripts/process_env_changes.py \
-            --account-name "${{ steps.form.outputs.account_name }}" \
-            --environment-change-action "${{ steps.form.outputs.environment_change_action }}" \
-            --environment-name "${{ steps.form.outputs.environment_name }}" \
-            --current-sso-group-name "${{ steps.form.outputs.current_sso_group_name }}" \
-            --current-level "${{ steps.form.outputs.current_level }}" \
-            --sso-group-name "${{ steps.form.outputs.sso_group_name }}" \
-            --level "${{ steps.form.outputs.level }}" \
-            --reviewers-change-action "${{ steps.form.outputs.reviewers_change_action }}" \
-            --current-additional-reviewers "${{ steps.form.outputs.current_additional_reviewers }}" \
-            --additional-reviewers "${{ steps.form.outputs.additional_reviewers }}" \
-            --tags-change-action "${{ steps.form.outputs.tags_change_action }}" \
-            --current-tag-key "${{ steps.form.outputs.current_tag_key }}" \
-            --current-tag-value "${{ steps.form.outputs.current_tag_value }}" \
-            --tag-key "${{ steps.form.outputs.tag_key }}" \
-            --tag-value "${{ steps.form.outputs.tag_value }}" \
-            --other-change-action "${{ steps.form.outputs.other_change_action }}" \
-            --current-github-oidc-team-repositories "${{ steps.form.outputs.current_github_oidc_team_repositories }}" \
-            --current-go-live-date "${{ steps.form.outputs.current_go_live_date }}" \
-            --github-oidc-team-repositories "${{ steps.form.outputs.github_oidc_team_repositories }}" \
-            --go-live-date "${{ steps.form.outputs.go_live_date }}"
+          set -euo pipefail
+          args=(
+            --account-name "${{ steps.form.outputs.account_name }}"
+            --environment-change-action "${{ steps.form.outputs.environment_change_action }}"
+            --environment-name "${{ steps.form.outputs.environment_name }}"
+            --current-sso-group-name "${{ steps.form.outputs.current_sso_group_name }}"
+            --current-level "${{ steps.form.outputs.current_level }}"
+            --sso-group-name "${{ steps.form.outputs.sso_group_name }}"
+            --level "${{ steps.form.outputs.level }}"
+            --reviewers-change-action "${{ steps.form.outputs.reviewers_change_action }}"
+            --current-additional-reviewers "${{ steps.form.outputs.current_additional_reviewers }}"
+            --additional-reviewers "${{ steps.form.outputs.additional_reviewers }}"
+            --tags-change-action "${{ steps.form.outputs.tags_change_action }}"
+            --current-tag-key "${{ steps.form.outputs.current_tag_key }}"
+            --current-tag-value "${{ steps.form.outputs.current_tag_value }}"
+            --tag-key "${{ steps.form.outputs.tag_key }}"
+            --tag-value "${{ steps.form.outputs.tag_value }}"
+          )
+
+          # Conditionally include 'other' section only if not 'skip'
+          other_action="${{ steps.form.outputs.other_change_action }}"
+          if [[ -n "$other_action" && "$other_action" != "skip" ]]; then
+            args+=(
+              --other-change-action "$other_action"
+              --current-github-oidc-team-repositories "${{ steps.form.outputs.current_github_oidc_team_repositories }}"
+              --current-go-live-date "${{ steps.form.outputs.current_go_live_date }}"
+              --github-oidc-team-repositories "${{ steps.form.outputs.github_oidc_team_repositories }}"
+              --go-live-date "${{ steps.form.outputs.go_live_date }}"
+            )
+          else
+            echo "Skipping 'other' section based on action='$other_action'"
+          fi
+
+          python3 scripts/process_env_changes.py "${args[@]}"
 
       - name: Commit changes
         run: |
