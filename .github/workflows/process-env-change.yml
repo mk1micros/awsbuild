@@ -161,6 +161,17 @@ jobs:
                 // ignore API errors; leave account empty
               }
             }
+              // If still empty, try values from parsed fields
+              if (!account) {
+                for (const [k,v] of Object.entries(fields)) {
+                  const val = (v || '').toLowerCase().replace(/[^a-z0-9_-]/g, '');
+                  if (nameSet.has(val)) { account = v; break; }
+                }
+              }
+              // Final fallback: prefer common raw keys
+              if (!account) {
+                account = get('app_name') || get('account-name') || get('account_name');
+              }
             core.setOutput('account_name', account);
             const preview = body.slice(0, 400).replace(/\n/g, '\\n');
             core.info(`Issue body preview (first 400 chars): ${preview}`);
