@@ -46,15 +46,36 @@ jobs:
               ["Go-live date (DD-MM-YYYY)", "go_live_date"],
             ]);
 
-            for (const line of body.split(/\r?\n/)) {
-              const m = line.match(/^([^:]+):\s*(.*)$/);
+            const lines = body.split(/\r?\n/);
+            // Parser 2: Issue Forms commonly render as label line followed by a value line
+            for (let i = 0; i < lines.length; i++) {
+              const labelLine = lines[i].trim();
+              if (!labelLine) continue;
+              // Skip markdown headings
+              if (labelLine.startsWith("###") || labelLine.startsWith("####")) continue;
+              // If label matches any known label, read next non-empty line as value
+              if (labelMap.has(labelLine)) {
+                let j = i + 1, value = "";
+                while (j < lines.length) {
+                  const v = lines[j].trim();
+                  j++;
+                  if (v === "" || v.startsWith("###") || v.startsWith("####")) continue;
+                  value = v;
+                  break;
+                }
+                const key = labelMap.get(labelLine);
+                if (key) fields[key] = value;
+                const rawKey = labelLine.toLowerCase().replace(/\s+/g,'_');
+                fields[rawKey] = value;
+              }
+              // Also support inline 'Label: value' format
+              const m = labelLine.match(/^([^:]+):\s*(.*)$/);
               if (m) {
                 const humanLabel = m[1].trim();
                 const value = m[2].trim();
                 const key = labelMap.get(humanLabel);
                 if (key) fields[key] = value;
-                // Also capture raw keys in case GitHub uses IDs
-                const rawKey = humanLabel.trim().toLowerCase().replace(/\s+/g,'_');
+                const rawKey = humanLabel.toLowerCase().replace(/\s+/g,'_');
                 fields[rawKey] = value;
               }
             }
