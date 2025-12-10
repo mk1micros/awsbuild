@@ -22,6 +22,7 @@ jobs:
           script: |
             const body = context.payload.issue.body || "";
             const fields = {};
+            const normalize = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
             // Map human labels from Issue Form to canonical keys
             const labelMap = new Map([
               ["App name (matches JSON filename in environments/)", "account_name"],
@@ -53,8 +54,19 @@ jobs:
               if (!labelLine) continue;
               // Skip markdown headings
               if (labelLine.startsWith("###") || labelLine.startsWith("####")) continue;
+              const norm = normalize(labelLine);
+              let matchedKey = null;
+              // Try exact label match first
+              if (labelMap.has(labelLine)) matchedKey = labelMap.get(labelLine);
+              // Fuzzy match: normalize and compare/contains
+              if (!matchedKey) {
+                for (const [lbl, key] of labelMap.entries()) {
+                  const normLbl = normalize(lbl);
+                  if (norm === normLbl || norm.includes(normLbl)) { matchedKey = key; break; }
+                }
+              }
               // If label matches any known label, read next non-empty line as value
-              if (labelMap.has(labelLine)) {
+              if (matchedKey) {
                 let j = i + 1, value = "";
                 while (j < lines.length) {
                   const v = lines[j].trim();
@@ -63,8 +75,7 @@ jobs:
                   value = v;
                   break;
                 }
-                const key = labelMap.get(labelLine);
-                if (key) fields[key] = value;
+                if (matchedKey) fields[matchedKey] = value;
                 const rawKey = labelLine.toLowerCase().replace(/\s+/g,'_');
                 fields[rawKey] = value;
               }
@@ -73,7 +84,13 @@ jobs:
               if (m) {
                 const humanLabel = m[1].trim();
                 const value = m[2].trim();
-                const key = labelMap.get(humanLabel);
+                let key = labelMap.get(humanLabel);
+                if (!key) {
+                  const normLbl = normalize(humanLabel);
+                  for (const [lbl, k] of labelMap.entries()) {
+                    if (normLbl === normalize(lbl) || normLbl.includes(normalize(lbl))) { key = k; break; }
+                  }
+                }
                 if (key) fields[key] = value;
                 const rawKey = humanLabel.toLowerCase().replace(/\s+/g,'_');
                 fields[rawKey] = value;
@@ -103,6 +120,8 @@ jobs:
               }
             }
             core.setOutput('account_name', account);
+            const preview = body.slice(0, 400).replace(/\n/g, '\\n');
+            core.info(`Issue body preview (first 400 chars): ${preview}`);
             core.info(`Parsed fields: ${JSON.stringify(fields, null, 2)}`);
             core.info(`Resolved account_name: ${account}`);
             // Environment section
