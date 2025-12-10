@@ -241,6 +241,39 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Normalize section actions and values, providing safe defaults when action is 'skip'
+          reviewers_action="${{ steps.form.outputs.reviewers_change_action }}"
+          tags_action="${{ steps.form.outputs.tags_change_action }}"
+          other_action="${{ steps.form.outputs.other_change_action }}"
+
+          current_addl_reviewers="${{ steps.form.outputs.current_additional_reviewers }}"
+          addl_reviewers="${{ steps.form.outputs.additional_reviewers }}"
+          current_tag_key="${{ steps.form.outputs.current_tag_key }}"
+          current_tag_value="${{ steps.form.outputs.current_tag_value }}"
+          tag_key="${{ steps.form.outputs.tag_key }}"
+          tag_value="${{ steps.form.outputs.tag_value }}"
+          current_oidc_repos="${{ steps.form.outputs.current_github_oidc_team_repositories }}"
+          current_go_live="${{ steps.form.outputs.current_go_live_date }}"
+          oidc_repos="${{ steps.form.outputs.github_oidc_team_repositories }}"
+          go_live="${{ steps.form.outputs.go_live_date }}"
+
+          if [[ "$reviewers_action" == "skip" ]]; then
+            current_addl_reviewers=""
+            addl_reviewers=""
+          fi
+          if [[ "$tags_action" == "skip" ]]; then
+            current_tag_key=""
+            current_tag_value=""
+            tag_key=""
+            tag_value=""
+          fi
+          if [[ "$other_action" == "skip" ]]; then
+            current_oidc_repos=""
+            current_go_live=""
+            oidc_repos=""
+            go_live=""
+          fi
+
           args=(
             --account-name "${{ steps.form.outputs.account_name }}"
             --environment-change-action "${{ steps.form.outputs.environment_change_action }}"
@@ -249,29 +282,23 @@ jobs:
             --current-level "${{ steps.form.outputs.current_level }}"
             --sso-group-name "${{ steps.form.outputs.sso_group_name }}"
             --level "${{ steps.form.outputs.level }}"
-            --reviewers-change-action "${{ steps.form.outputs.reviewers_change_action }}"
-            --current-additional-reviewers "${{ steps.form.outputs.current_additional_reviewers }}"
-            --additional-reviewers "${{ steps.form.outputs.additional_reviewers }}"
-            --tags-change-action "${{ steps.form.outputs.tags_change_action }}"
-            --current-tag-key "${{ steps.form.outputs.current_tag_key }}"
-            --current-tag-value "${{ steps.form.outputs.current_tag_value }}"
-            --tag-key "${{ steps.form.outputs.tag_key }}"
-            --tag-value "${{ steps.form.outputs.tag_value }}"
+            # Reviewers
+            --reviewers-change-action "$reviewers_action"
+            --current-additional-reviewers "$current_addl_reviewers"
+            --additional-reviewers "$addl_reviewers"
+            # Tags
+            --tags-change-action "$tags_action"
+            --current-tag-key "$current_tag_key"
+            --current-tag-value "$current_tag_value"
+            --tag-key "$tag_key"
+            --tag-value "$tag_value"
+            # Other
+            --other-change-action "$other_action"
+            --current-github-oidc-team-repositories "$current_oidc_repos"
+            --current-go-live-date "$current_go_live"
+            --github-oidc-team-repositories "$oidc_repos"
+            --go-live-date "$go_live"
           )
-
-          # Conditionally include 'other' section only if not 'skip'
-          other_action="${{ steps.form.outputs.other_change_action }}"
-          if [[ -n "$other_action" && "$other_action" != "skip" ]]; then
-            args+=(
-              --other-change-action "$other_action"
-              --current-github-oidc-team-repositories "${{ steps.form.outputs.current_github_oidc_team_repositories }}"
-              --current-go-live-date "${{ steps.form.outputs.current_go_live_date }}"
-              --github-oidc-team-repositories "${{ steps.form.outputs.github_oidc_team_repositories }}"
-              --go-live-date "${{ steps.form.outputs.go_live_date }}"
-            )
-          else
-            echo "Skipping 'other' section based on action='$other_action'"
-          fi
 
           python3 scripts/process_env_changes.py "${args[@]}"
 
