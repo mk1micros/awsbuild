@@ -11,6 +11,10 @@
         {
           "sso_group_name": "green-ops",
           "level": "data-engineer"
+        },
+        {
+          "sso_group_name": "dev-team",
+          "level": "sandbox"
         }
       ]
     },
