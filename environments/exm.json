@@ -16,6 +16,9 @@
           "sso_group_name": "dev-team",
           "level": "sandbox"
         }
+      ],
+      "additional_reviewers": [
+        "markgov"
       ]
     },
     {
